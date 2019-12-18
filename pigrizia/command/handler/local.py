@@ -4,7 +4,7 @@ import shlex
 
 class LocalHandler:
     """
-    This is a command-handler the executes commands on the local system.
+    This is a command handler the executes commands on the local system.
 
     """
 
