@@ -1,21 +1,29 @@
 import unittest
+from getpass import getuser, getpass
 from pigrizia.host.linux import Linux
 
-class TestLinux(unittest.TestCase):
+class BaseTestCases:
+    class LinuxTestBase(unittest.TestCase):
+        def test_file_exists(self):
+            self.assertTrue(self.host.file_exists('/etc/hosts'))
+            self.assertFalse(self.host.file_exists('/etc/foo'))
+
+        def test_directory_exists(self):
+            self.assertTrue(self.host.directory_exists('/etc'))
+            self.assertFalse(self.host.directory_exists('/foo'))
+
+class TestLocalLinux(BaseTestCases.LinuxTestBase):
     def setUp(self):
-        # Not passing an IP address to this makes in local.
         self.host = Linux()
 
-    def tearDown(self):
-        pass
+class TestRemoteLinux(BaseTestCases.LinuxTestBase):
+    user = getuser()
+    passwd = getpass()
+    addr = '127.0.0.1'
 
-    def test_file_exists(self):
-        self.assertTrue(self.host.file_exists('/etc/hosts'))
-        self.assertFalse(self.host.file_exists('/etc/non-existent'))
-
-    def test_directory_exists(self):
-        self.assertTrue(self.host.directory_exists('/etc'))
-        self.assertFalse(self.host.directory_exists('/non-existent'))
+    def setUp(self):
+        self.host = Linux(addr=self.addr, user=self.user, 
+                passwd=self.passwd)
 
 if __name__ == '__main__':
     unittest.main()
