@@ -52,7 +52,7 @@ class RemoteHandler:
         """
         stdin, stdout, stderr = self.ssh.exec_command(cmd)
         out = [o.strip() for o in stdout.readlines()]
-        err = [o.strip() for e in stderr.readlines()]
+        err = [e.strip() for e in stderr.readlines()]
         ret = stdout.channel.recv_exit_status()
         return ret, out, err
 
