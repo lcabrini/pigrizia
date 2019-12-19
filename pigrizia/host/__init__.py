@@ -24,7 +24,6 @@ class Host:
             from pigrizia.command.handler.local import LocalHandler
             self.cmdh = LocalHandler()
 
-
 def detect_host(addr=None):
     """
     This will detect the host
