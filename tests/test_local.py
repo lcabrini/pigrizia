@@ -5,20 +5,19 @@ from pigrizia.host.linux import Linux
 # system.
 class LocalTest(unittest.TestCase):
     def setUp(self):
-        pass
+        # Not passing an IP address to this makes in local.
+        self.host = Linux()
 
     def tearDown(self):
         pass
 
     def test_file_exists(self):
-        host = Linux()
-        self.assertTrue(host.file_exists('/etc/hosts'))
-        self.assertFalse(host.file_exists('/etc/non-existent'))
+        self.assertTrue(self.host.file_exists('/etc/hosts'))
+        self.assertFalse(self.host.file_exists('/etc/non-existent'))
 
     def test_directory_exists(self):
-        host = Linux()
-        self.assertTrue(host.directory_exists('/etc'))
-        self.assertFalse(host.directory_exists('/non-existent'))
+        self.assertTrue(self.host.directory_exists('/etc'))
+        self.assertFalse(self.host.directory_exists('/non-existent'))
 
 if __name__ == '__main__':
     unittest.main()
