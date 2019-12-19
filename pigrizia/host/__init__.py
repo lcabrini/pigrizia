@@ -18,7 +18,7 @@ class Host:
 
     def __init__(self, **kwargs):
         if 'addr' in kwargs and not kwargs['addr'] is None:
-            from pigrizia.command.handler.paramiko import ParamikoHandler
+            from pigrizia.command.handler.remote import RemoteHandler
             self.cmdh = ParamikoHandler()
         else:
             from pigrizia.command.handler.local import LocalHandler

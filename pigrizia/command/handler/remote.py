@@ -1,6 +1,6 @@
 import paramiko
 
-class ParamikoHandler:
+class RemoteHandler:
     """
     This is a command handler that executes commands on a remote system
     using Paramiko.
