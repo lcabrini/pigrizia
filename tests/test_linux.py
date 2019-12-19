@@ -1,8 +1,6 @@
 import unittest
 from pigrizia.host.linux import Linux
 
-# TODO: this should change name, since the tests are on a local Linux
-# system.
 class TestLinux(unittest.TestCase):
     def setUp(self):
         # Not passing an IP address to this makes in local.
