@@ -6,8 +6,9 @@
 
 import time
 from subprocess import Popen, PIPE
+import pexpect
 import shlex
-from . import NoSuchCommand
+from . import NoSuchCommand, BadPassword
 
 class LocalHandler:
     """
@@ -41,8 +42,35 @@ class LocalHandler:
             raise NoSuchCommand(args[0])
 
     def sudo(self, cmd, **kwargs):
-        pass
+        """
+        Invoke a single command as the specified user (the default is
+        root).
+
+        :param str cmd: the command-line to execute.
+        :return: a tuple consisting of the exit code of the command,
+            stdout and stderr
+        :rtype: tuple
+        """
+
+        if 'user' in kwargs:
+            cmd = "sudo -Su {} {}".format(kwargs['user'], cmd)
+        else:
+            cmd = "sudo -S {}".format(cmd)
+    
+        args = shlex.split(cmd)
+        with Popen(args, stdin=PIPE, stdout=PIPE, stderr=PIPE) as p:
+            if 'passwd' in kwargs:
+                passwd = "{}\n".format(kwargs['passwd']).encode()
+                out, err = p.communicate(passwd)
+            else:
+                out, err = p.communicate()
+
+        if out:
+            out = out.decode().splitlines()
+        if err:
+            err = err.decode().splitlines()
+
+        return p.returncode, out, err
 
     def interact(self, script, **kwargs):
         pass
-

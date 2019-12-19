@@ -13,12 +13,20 @@ from pigrizia.command.handler import NoSuchCommand
 class BaseTestCases:
     class CommandHandlersTestBase(unittest.TestCase):
         user = getuser()
+        passwd = getpass()
 
-        def test_command(self):
+        def test_do(self):
             ret, out, err = self.handler.do("whoami")
             self.assertEqual(ret, 0)
             self.assertEqual(len(out), 1)
             self.assertEqual(out[0], self.user)
+            self.assertEqual(len(err), 0)
+
+        def test_sudo(self):
+            ret, out, err = self.handler.sudo("whoami", passwd=self.passwd)
+            self.assertEqual(ret, 0)
+            self.assertEqual(len(out), 1)
+            self.assertEqual(out[0], 'root')
             self.assertEqual(len(err), 0)
 
         def test_invalid_command(self):
@@ -29,7 +37,6 @@ class TestLocalCommandHandler(BaseTestCases.CommandHandlersTestBase):
         self.handler = LocalHandler()
 
 class TestRemoteCommandHandler(BaseTestCases.CommandHandlersTestBase):
-    passwd = getpass()
     addr = '127.0.0.1'
 
     def setUp(self):
