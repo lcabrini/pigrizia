@@ -8,6 +8,8 @@ class RemoteHandler:
     """
 
     def __init__(self, **kwargs):
+        self.addr = kwargs['addr']
+
         if 'user' in kwargs:
             self.user = kwargs['user']
         else:
@@ -30,11 +32,23 @@ class RemoteHandler:
         self.ssh = paramiko.SSHClient()
         self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         # TODO: check if connection fails
-        self.ssh.connect(self.host, username=self.user, 
+        self.ssh.connect(self.addr, username=self.user, 
                 password=self.passwd)
 
     def do(self, cmd, **kwargs):
-        pass
+        """
+        Invoke a single command as the curent user.
+
+        :param str cmd: the command to run, including arguments
+        :return: a tuple consisting of the exit code, output to stdout
+            and output to stderr
+        :rtype: tuple
+        """
+        stdin, stdout, stderr = self.ssh.exec_command(cmd)
+        out = [o.strip() for o in stdout.readlines()]
+        err = [o.strip() for e in stderr.readlines()]
+        ret = stdout.channel.recv_exit_status()
+        return ret, out, err
 
     def sudo(self, cmd, **kwargs):
         pass
