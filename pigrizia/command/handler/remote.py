@@ -5,6 +5,7 @@
 # https://opensource.org/licenses/MIT.
 
 from getpass import getuser
+import shlex
 import paramiko
 from . import NoSuchCommand
 
@@ -56,7 +57,7 @@ class RemoteHandler:
         err = [e.strip() for e in stderr.readlines()]
         ret = stdout.channel.recv_exit_status()
         if ret == 127:
-            raise NoSuchCommand(cmd)
+            raise NoSuchCommand(shlex.split(cmd)[0])
         return ret, out, err
 
     def sudo(self, cmd, **kwargs):
