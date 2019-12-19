@@ -7,6 +7,7 @@
 import time
 from subprocess import Popen, PIPE
 import shlex
+from . import NoSuchCommand
 
 class LocalHandler:
     """
@@ -37,8 +38,7 @@ class LocalHandler:
 
             return p.returncode, out, err
         except FileNotFoundError as e:
-            # TODO: what should we raise?
-            pass
+            raise NoSuchCommand(args[0])
 
     def sudo(self, cmd, **kwargs):
         pass

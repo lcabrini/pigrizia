@@ -6,6 +6,7 @@
 
 from getpass import getuser
 import paramiko
+from . import NoSuchCommand
 
 class RemoteHandler:
     """
@@ -54,6 +55,8 @@ class RemoteHandler:
         out = [o.strip() for o in stdout.readlines()]
         err = [e.strip() for e in stderr.readlines()]
         ret = stdout.channel.recv_exit_status()
+        if ret == 127:
+            raise NoSuchCommand(cmd)
         return ret, out, err
 
     def sudo(self, cmd, **kwargs):
