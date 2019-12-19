@@ -8,6 +8,7 @@ import unittest
 from getpass import getuser, getpass
 from pigrizia.command.handler.local import LocalHandler
 from pigrizia.command.handler.remote import RemoteHandler
+from pigrizia.command.handler import NoSuchCommand
 
 class BaseTestCases:
     class CommandHandlersTestBase(unittest.TestCase):
@@ -19,6 +20,9 @@ class BaseTestCases:
             self.assertEqual(len(out), 1)
             self.assertEqual(out[0], self.user)
             self.assertEqual(len(err), 0)
+
+        def test_invalid_command(self):
+            self.assertRaises(NoSuchCommand, self.handler.do, "foo")
 
 class TestLocalCommandHandler(BaseTestCases.CommandHandlersTestBase):
     def setUp(self):
