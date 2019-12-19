@@ -5,9 +5,6 @@ class RemoteHandler:
     """
     This is a command handler that executes commands on a remote system
     using Paramiko.
-
-    :param str user: the user to use for the SSH connection
-    :param str passwd: the password assoctiated with the user
     """
 
     def __init__(self, **kwargs):
@@ -29,6 +26,12 @@ class RemoteHandler:
             # TODO: is this needed? Since I don't know, I will keep it 
             # here for now.
             self.passphrase = kwargs['passphrase']
+
+        self.ssh = paramiko.SSHClient()
+        self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        # TODO: check if connection fails
+        self.ssh.connect(self.host, username=self.user, 
+                password=self.passwd)
 
     def do(self, cmd, **kwargs):
         pass
