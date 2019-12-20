@@ -4,6 +4,15 @@
 # license that can be found in the LICENSE file or at
 # https://opensource.org/licenses/MIT.
 
+import logging
+logger = logging.getLogger()
+
+class UnknownSystem(Exception):
+    """
+    Raised if the system cannot be detected
+    """
+    pass
+
 class UserError(Exception):
     """
     Base class for user management errors
@@ -42,13 +51,37 @@ class Host:
             from pigrizia.command.handler.local import LocalHandler
             self.cmdh = LocalHandler(**kwargs)
 
-def detect_host(addr=None):
+def detect_host(**kwargs):
     """
     This will detect the host
 
-    :param addr: the IP address or hostname of the host
-    :type addr: str or None
     :return: a host object that (hopefully) represents the host at the
         specified address
     :rtype: a subclass of :class:`~pigrizia.host.Host`
-    """ 
+    """
+    # TODO: this function has to be rewritten, because it is really clumsy.
+    # for now it get the job done, however.
+    from .linux import Fedora, Issabel, CentOS, Ubuntu, Debian, Linux
+    
+    linux = Linux(**kwargs)
+    if Fedora.detect(linux):
+        logger.info("detected Fedora")
+        return Fedora(**kwargs)
+    elif Issabel.detect(linux):
+        logger.info("detected Issabel")
+        return Issabel(**kwargs)
+    elif CentOS.detect(linux):
+        logger.info("detected CentOS")
+        return CentOS(**kwargs)
+    elif Ubuntu.detect(linux):
+        logger.info("detected Ubuntu")
+        return Ubuntu(**kwargs)
+    elif Debian.detect(linux):
+        logger.info("detected debian")
+        return Debian(**kwargs)
+    elif Linux.detect(linux):
+        return linux
+    else:
+        # We really don't know how the system works, so better just raise
+        # an exception.
+        raise UnknownSystem()

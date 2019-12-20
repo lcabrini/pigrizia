@@ -30,6 +30,7 @@ class Linux(Host):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.os = 'linux'
 
     def directory_exists(self, path, **kwargs):
         """ 
@@ -146,3 +147,76 @@ class Linux(Host):
 
     def __str__(self):
         return "Linux"
+
+class Fedora(Linux):
+    """
+    This represents Fedora Linux.
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.os = 'fedora'
+        self.package_sets = {}
+
+    @staticmethod
+    def detect(host):
+        return host.file_exists('/etc/fedora-release')
+
+class CentOS(Linux):
+    """
+    Representation of CentOS.
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.os = 'centos'
+        self.package_sets = {}
+
+    @staticmethod
+    def detect(host):
+        return host.file_exists('/etc/centos-release')
+
+class Issabel(CentOS):
+    """
+    Represents Issabel.
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.os = 'issabel'
+
+    @staticmethod
+    def detect(host):
+        return host.file_exists('/etc/issabel.conf')
+
+class Debian(Linux):
+    """
+    Representation of Debian GNU/Linux.
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.os = 'debian'
+
+    @staticmethod
+    def detect(host):
+        if not host.file_exists('/etc/os-release'):
+            return False
+        # TODO: parse ID field of /etc/os-release for debian
+        return False
+
+class Ubuntu(Debian):
+    """
+    Represents Ubuntu.
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.os = 'ubuntu'
+
+    @staticmethod
+    def detect(host):
+        if not host.file_exists('/etc/os-release'):
+            return False
+        # TODO: parse ID field of /etc/os-release for ubuntu
+        return False
