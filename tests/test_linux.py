@@ -11,6 +11,7 @@ from pigrizia.host.linux import Linux
 class BaseTestCases:
     class LinuxTestBase(unittest.TestCase):
         user = getuser()
+        passwd = getpass()
 
         def test_file_exists(self):
             self.assertTrue(self.host.file_exists('/etc/hosts'))
@@ -26,10 +27,9 @@ class BaseTestCases:
 
 class TestLocalLinux(BaseTestCases.LinuxTestBase):
     def setUp(self):
-        self.host = Linux()
+        self.host = Linux(user=self.user, passwd=self.passwd)
 
 class TestRemoteLinux(BaseTestCases.LinuxTestBase):
-    passwd = getpass()
     addr = '127.0.0.1'
 
     def setUp(self):
