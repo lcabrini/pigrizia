@@ -5,6 +5,9 @@
 # https://opensource.org/licenses/MIT.
 
 import logging
+import string
+import secrets
+import crypt
 from . import Host
 
 logger = logging.getLogger(__name__)
@@ -62,11 +65,59 @@ class Linux(Host):
         ret, out, err = self._call("whoami", **kwargs)
         return out[0] if len(out) > 0 else ''
 
+    def useradd(self, user, **kwargs):
+        """
+        Adds a user to this system.
+
+        :param str user: the name of the user to add
+        :param str passwd: the encrypted password
+        :return: True if the user was created, otherwise False
+        :rtype: bool
+        """
+        cmd = "useradd"
+
+        if 'create_home' in kwargs and kwargs['create_home'] == False:
+            pass
+        else:
+            cmd += " -m"
+
+        if 'passwd' in kwargs:
+            passwd = kwargs['passwd']
+        else:
+            passwd = self._gen_password()
+        passwd = self._crypt(passwd)
+
+        cmd += ' -p {}'.format(passwd)
+        cmd += ' {}'.format(user)
+        kwargs['sudo'] = True
+        ret, out, err = self._call(cmd, **kwargs)
+        return ret == 0
+
+    def userdel(self, user, **kwargs):
+        """
+        Removes a user from the current system
+        
+        :param str user: the user to delete
+        :return: True if the user was deleted, otherwise False
+        :rtype: bool
+        """
+        cmd = 'userdel -r {}'.format(user)
+        kwargs['sudo'] = True
+        ret, out, err = self._call(cmd, **kwargs)
+        return ret == 0
+
     def _call(self, cmd, **kwargs):
         if 'sudo' in kwargs and kwargs['sudo'] is True:
             return self.cmdh.sudo(cmd)
         else:
             return self.cmdh.do(cmd)
+
+    def _gen_password(self):
+        alpha = string.ascii_letters + string.digits
+        return ''.join(secrets.choice(alpha) for i in range(12))
+
+    def _crypt(self, passwd):
+        return crypt.crypt(passwd, crypt.mksalt())
 
     def __str__(self):
         return "Linux"

@@ -25,6 +25,12 @@ class BaseTestCases:
             self.assertEqual(self.host.whoami(), self.user)
             self.assertEqual(self.host.whoami(sudo=True), 'root')
 
+        def test_user_add_and_delete(self):
+            user="foobar"
+            passwd="barfoo"
+            self.assertTrue(self.host.useradd(user=user, passwd=passwd))
+            self.assertTrue(self.host.userdel(user=user))
+
 class TestLocalLinux(BaseTestCases.LinuxTestBase):
     def setUp(self):
         self.host = Linux(user=self.user, passwd=self.passwd)
