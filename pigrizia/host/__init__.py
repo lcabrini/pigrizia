@@ -79,7 +79,7 @@ def detect_host(**kwargs):
     elif Debian.detect(linux):
         logger.info("detected debian")
         return Debian(**kwargs)
-    elif Linux.detect(linux):
+    elif linux.uname == 'Linux':
         return linux
     else:
         # We really don't know how the system works, so better just raise

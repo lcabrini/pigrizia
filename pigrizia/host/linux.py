@@ -30,7 +30,6 @@ class Linux(Host):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.os = 'linux'
 
     def directory_exists(self, path, **kwargs):
         """ 
@@ -132,6 +131,35 @@ class Linux(Host):
                 return True
         return False
 
+    def uname(self, **kwargs):
+        """
+        Returns the uname
+
+        :return: the kernel name
+        :rtype: str
+        """
+        ret, out, err = self_call("uname")
+        return ret[0]
+
+    def distro(self, **kwargs):
+        """
+        Reads the ID of the current distro.
+
+        :return: the value of the ID field of /etc/os-release, or None
+            if the file does not exist
+        :rtype: str or NoneType
+        """
+        if not self.file_exists('/etc/os-release'):
+            return None
+
+        cmd = "cat /etc/os-release"
+        ret, out, err = self._call(cmd, **kwargs)
+        for line in out:
+            if line.startswith("ID="):
+                return line.split('=')[1] 
+        # Hopefully we don't get here, but ...
+        return None
+
     def _call(self, cmd, **kwargs):
         if 'sudo' in kwargs and kwargs['sudo'] is True:
             return self.cmdh.sudo(cmd)
@@ -155,12 +183,11 @@ class Fedora(Linux):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.os = 'fedora'
         self.package_sets = {}
 
     @staticmethod
     def detect(host):
-        return host.file_exists('/etc/fedora-release')
+        return host.distro() == 'fedora'
 
 class CentOS(Linux):
     """
@@ -169,12 +196,11 @@ class CentOS(Linux):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.os = 'centos'
         self.package_sets = {}
 
     @staticmethod
     def detect(host):
-        return host.file_exists('/etc/centos-release')
+        return host.distro() == 'centos'
 
 class Issabel(CentOS):
     """
@@ -183,10 +209,10 @@ class Issabel(CentOS):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.os = 'issabel'
 
     @staticmethod
     def detect(host):
+        # ID in /etc/os-release is centos, not issabel.
         return host.file_exists('/etc/issabel.conf')
 
 class Debian(Linux):
@@ -196,14 +222,11 @@ class Debian(Linux):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.os = 'debian'
+        self.package_sets = {}
 
     @staticmethod
     def detect(host):
-        if not host.file_exists('/etc/os-release'):
-            return False
-        # TODO: parse ID field of /etc/os-release for debian
-        return False
+        return host.distro() == 'debian'
 
 class Ubuntu(Debian):
     """
@@ -212,11 +235,7 @@ class Ubuntu(Debian):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.os = 'ubuntu'
 
     @staticmethod
     def detect(host):
-        if not host.file_exists('/etc/os-release'):
-            return False
-        # TODO: parse ID field of /etc/os-release for ubuntu
-        return False
+        return host.distro() == 'ubuntu'
