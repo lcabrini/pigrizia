@@ -22,7 +22,7 @@ class BaseTestCases:
 
         def test_whoami(self):
             self.assertEqual(self.host.whoami(), self.user)
-            self.assertEqual(self.host.whoami(sudo=True), self.user)
+            self.assertEqual(self.host.whoami(sudo=True), 'root')
 
 class TestLocalLinux(BaseTestCases.LinuxTestBase):
     def setUp(self):
