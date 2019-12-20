@@ -4,6 +4,8 @@
 # license that can be found in the LICENSE file or at
 # https://opensource.org/licenses/MIT.
 
+import time
+import re
 from getpass import getuser
 import shlex
 import paramiko
@@ -61,7 +63,29 @@ class RemoteHandler:
         return ret, out, err
 
     def sudo(self, cmd, **kwargs):
-        pass
+        """
+        Invoke a singled command as another user (by default root).
+
+        :param str cmd: the command to run including the arguments
+        :return: a tuple consisting of the exit code, output to stdout
+            and output to stderr
+        :rtype: tuple
+        """
+        if 'user' in kwargs:
+            cmd = "sudo -Su {} {}".format(kwargs['user'], cmd)
+        else:
+            cmd = "sudo -S {}".format(cmd)
+
+        stdin, stdout, stderr = self.ssh.exec_command(cmd)
+        time.sleep(0.1)
+        if 'passwd' in kwargs:
+            stdin.write("{}\n".format(kwargs['passwd']))
+        out = [o.strip() for o in stdout.readlines()]
+        err = [e.strip() for e in stderr.readlines()]
+        if err[0].startswith('[sudo]'):
+            err.pop()
+        ret = stdout.channel.recv_exit_status()
+        return ret, out, err
 
     def interact(self, script, **kwargs):
         pass
