@@ -90,6 +90,10 @@ class Linux(Host):
             passwd = self._gen_password()
         passwd = self._crypt(passwd)
 
+        # TODO: if the password above was generated, then the only 
+        # reference to it is this one local variable. We better do
+        # something with that password or it will get lost forever.
+
         cmd += ' -p {}'.format(passwd)
         cmd += ' {}'.format(user)
         kwargs['sudo'] = True
