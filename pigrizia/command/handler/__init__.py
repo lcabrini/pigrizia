@@ -4,6 +4,8 @@
 # license that can be found in the LICENSE file or at
 # https://opensource.org/licenses/MIT.
 
+from getpass import getuser
+
 class NoSuchCommand(Exception):
     """
     Represents a command that cannot be found.
