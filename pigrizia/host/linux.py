@@ -8,7 +8,7 @@ import logging
 import string
 import secrets
 import crypt
-from . import Host
+from . import Host, UserExists, NoSuchUser
 
 logger = logging.getLogger(__name__)
 
@@ -74,6 +74,9 @@ class Linux(Host):
         :return: True if the user was created, otherwise False
         :rtype: bool
         """
+        if self.user_exists(user):
+            raise UserExists(user)
+
         cmd = "useradd"
 
         if 'create_home' in kwargs and kwargs['create_home'] == False:
@@ -101,6 +104,9 @@ class Linux(Host):
         :return: True if the user was deleted, otherwise False
         :rtype: bool
         """
+        if not self.user_exists(user):
+            raise NoSuchUser(user)
+
         cmd = 'userdel -r {}'.format(user)
         kwargs['sudo'] = True
         ret, out, err = self._call(cmd, **kwargs)

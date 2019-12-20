@@ -4,6 +4,24 @@
 # license that can be found in the LICENSE file or at
 # https://opensource.org/licenses/MIT.
 
+class UserError(Exception):
+    """
+    Base class for user management errors
+    """
+    pass
+
+class UserExists(UserError):
+    """
+    Represents a user already existing (when trying to add the user).
+    """
+    pass
+
+class NoSuchUser(UserError):
+    """
+    Raised when trying to do something to a user that does not exist.
+    """
+    pass
+
 class Host:
     """
     A host represents a machine on the network that you can connect to.

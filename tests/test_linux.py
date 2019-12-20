@@ -7,6 +7,7 @@
 import unittest
 from getpass import getuser, getpass
 from pigrizia.host.linux import Linux
+from pigrizia.host import UserExists, NoSuchUser
 
 class BaseTestCases:
     class LinuxTestBase(unittest.TestCase):
@@ -37,6 +38,12 @@ class BaseTestCases:
             self.assertTrue(self.host.user_exists(user))
             self.assertTrue(self.host.userdel(user=user))
             self.assertFalse(self.host.user_exists(user))
+
+        def test_adding_existing_user(self):
+            self.assertRaises(UserExists, self.host.useradd, "root")
+
+        def test_removing_nonexisting_user(self):
+            self.assertRaises(NoSuchUser, self.host.userdel, "bimbaz")
 
 class TestLocalLinux(BaseTestCases.LinuxTestBase):
     def setUp(self):
