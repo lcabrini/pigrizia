@@ -19,6 +19,9 @@ setuptools.setup(
         long_description=longdesc,
         url="https://github.com/lcabrini/pigrizia",
         packages=setuptools.find_packages(),
+        install_requires=[
+            'paramiko',
+            ]
         classifiers=[
             "Programming Language :: Python :: 3",
             "License :: OSI Approved :: MIT License",
