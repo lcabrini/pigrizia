@@ -59,7 +59,7 @@ class LocalHandler:
 
         if 'passwd' in kwargs:
             passwd = kwargs['passwd']
-        elif hasattr(self, passwd):
+        elif hasattr(self, 'passwd'):
             passwd = self.passwd
         else:
             passwd = None
