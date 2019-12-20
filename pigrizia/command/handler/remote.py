@@ -85,8 +85,9 @@ class RemoteHandler:
 
         stdin, stdout, stderr = self.ssh.exec_command(cmd)
         time.sleep(0.1)
-        if 'passwd' in kwargs:
-            stdin.write("{}\n".format(kwargs['passwd']))
+        if passwd is not None:
+            stdin.write("{}\n".format(passwd))
+
         out = [o.strip() for o in stdout.readlines()]
         err = [e.strip() for e in stderr.readlines()]
         if err[0].startswith('[sudo]'):
