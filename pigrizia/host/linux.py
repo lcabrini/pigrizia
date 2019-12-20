@@ -106,6 +106,21 @@ class Linux(Host):
         ret, out, err = self._call(cmd, **kwargs)
         return ret == 0
 
+    def user_exists(self, user, **kwargs):
+        """
+        Checks if a user exists on the current system.
+
+        :param str user: the user to check for
+        :return: True if the user exists or False if they don't
+        :rtype: bool
+        """
+        cmd = "cat /etc/passwd"
+        ret, out, err = self._call(cmd, **kwargs)
+        for line in out:
+            if line.startswith("{}:".format(user)):
+                return True
+        return False
+
     def _call(self, cmd, **kwargs):
         if 'sudo' in kwargs and kwargs['sudo'] is True:
             return self.cmdh.sudo(cmd)
