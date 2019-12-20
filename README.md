@@ -41,17 +41,29 @@ account on a 192.168.0.184, sudo access and the same username as your
 local user.
 
     >>> from getpass import getpass
-    >>> from pigrizia.host.linux import Linux
+    >>> from pigrizia.host import detect_host
     >>> passwd = getpass()
-    >>> linux = Linux(addr='192.168.0.184', passwd=passwd)
-    >>> linux.user_exists('lorenzo')
+    >>> host = detect_host('192.168.0.100')
+    >>> type(host)
+    <class 'pigrizia.host.linux.Issabel'>
+    >>> host.distro()
+    '"centos"'
+    >>> host.user_exists('lorenzo')
     True
-    >>> linux.user_exists('salvatore')
+    >>> host.user_exists('salvatore')
     False
     >>> new_passwd = getpass()
-    >>> linux.useradd('salvatore', new_passwd)
-    >>> linux.user_exists('salvatore')
+    >>> host.useradd('salvatore', new_passwd)
+    >>> host.user_exists('salvatore')
     True
+
+By not passing in an addr, you would be working locally.
+
+    >>> host = detect_host(passwd=passwd)
+    >>> host.distro()
+    'fedora'
+    >>> host.whoami()
+    'lorenzo'
 
 If you wanted to add a user to multiple hosts, that would be (assuming
 the same password on all hosts):
