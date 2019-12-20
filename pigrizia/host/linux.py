@@ -52,6 +52,16 @@ class Linux(Host):
         ret, out, err = self._call(cmd, **kwargs)
         return ret == 0
 
+    def whoami(self, **kwargs):
+        """
+        Gets the name of the current user.
+
+        :returns: the name of the current user
+        :rtype: str
+        """
+        ret, out, err = self._call("whoami", **kwargs)
+        return out[0]
+
     def _call(self, cmd, **kwargs):
         if 'sudo' in kwargs and kwargs['sudo'] is True:
             return self.cmdh.sudo(cmd)
