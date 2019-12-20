@@ -73,7 +73,7 @@ class LocalHandler:
                 out, err = p.communicate()
 
         out = out.decode().splitlines() if out else []
-        err = out.decode().splitlines() if err else []
+        err = err.decode().splitlines() if err else []
         return p.returncode, out, err
 
     def interact(self, script, **kwargs):
