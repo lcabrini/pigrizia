@@ -8,16 +8,16 @@ import time
 from subprocess import Popen, PIPE
 import pexpect
 import shlex
-from . import NoSuchCommand, BadPassword
+from . import Handler, NoSuchCommand
 
-class LocalHandler:
+class LocalHandler(Handler):
     """
     This is a command handler the executes commands on the local system.
 
     """
 
     def __init__(self, **kwargs):
-        pass
+        super().__init__(**kwargs)
 
     def do(self, cmd, **kwargs):
         """ 
