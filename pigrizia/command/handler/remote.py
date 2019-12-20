@@ -30,7 +30,7 @@ class RemoteHandler(Handler):
         self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         # TODO: check if connection fails
         # TODO: quick fix for now. Think of something better.
-        if hasattr(self.passwd)
+        if hasattr(self.passwd):
             self.ssh.connect(self.addr, username=self.user, 
                     password=self.passwd)
         else:
