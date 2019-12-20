@@ -60,7 +60,7 @@ class Linux(Host):
         :rtype: str
         """
         ret, out, err = self._call("whoami", **kwargs)
-        return out[0]
+        return out[0] if len(out) > 0 else ''
 
     def _call(self, cmd, **kwargs):
         if 'sudo' in kwargs and kwargs['sudo'] is True:
