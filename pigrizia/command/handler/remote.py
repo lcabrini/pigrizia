@@ -76,6 +76,13 @@ class RemoteHandler:
         else:
             cmd = "sudo -S {}".format(cmd)
 
+        if 'passwd' in kwargs:
+            passwd = kwargs['passwd']
+        elif hasattr(self, passwd):
+            passwd = self.passwd
+        else:
+            passwd = None
+
         stdin, stdout, stderr = self.ssh.exec_command(cmd)
         time.sleep(0.1)
         if 'passwd' in kwargs:
