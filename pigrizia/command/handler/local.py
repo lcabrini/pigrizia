@@ -56,20 +56,24 @@ class LocalHandler:
             cmd = "sudo -Su {} {}".format(kwargs['user'], cmd)
         else:
             cmd = "sudo -S {}".format(cmd)
+
+        if 'passwd' in kwargs:
+            passwd = kwargs['passwd']
+        elif hasattr(self, passwd):
+            passwd = self.passwd
+        else:
+            passwd = None
     
         args = shlex.split(cmd)
         with Popen(args, stdin=PIPE, stdout=PIPE, stderr=PIPE) as p:
-            if 'passwd' in kwargs:
-                passwd = "{}\n".format(kwargs['passwd']).encode()
+            if passwd is not None:
+                passwd = "{}\n".format(passwd).encode()
                 out, err = p.communicate(passwd)
             else:
                 out, err = p.communicate()
 
-        if out:
-            out = out.decode().splitlines()
-        if err:
-            err = err.decode().splitlines()
-
+        out = out.decode().splitlines() if out else []
+        err = out.decode().splitlines() if err else []
         return p.returncode, out, err
 
     def interact(self, script, **kwargs):
