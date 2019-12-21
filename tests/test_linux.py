@@ -22,6 +22,13 @@ class BaseTestCases:
             self.assertTrue(self.host.directory_exists('/etc'))
             self.assertFalse(self.host.directory_exists('/foo'))
 
+        def test_mkdir_and_rmdir(self):
+            self.assertFalse(self.host.directory_exists('/tmp/foo'))
+            self.assertEqual(self.host.mkdir('/tmp/foo'), 0)
+            self.assertTrue(self.host.directory_exists('/tmp/foo'))
+            self.assertEqual(self.host.rmdir('/tmp/foo'), 0)
+            self.assertFalse(self.host.directory_exists('/tmp/foo'))
+
         def test_whoami(self):
             self.assertEqual(self.host.whoami(), self.user)
             self.assertEqual(self.host.whoami(sudo=True), 'root')

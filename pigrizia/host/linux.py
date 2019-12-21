@@ -55,6 +55,25 @@ class Linux(Host):
         ret, out, err = self._call(cmd, **kwargs)
         return ret == 0
 
+    def mkdir(self, path, **kwargs):
+        """
+        Creates the specified directory.
+        """
+        cmd = "mkdir -p {}".format(path)
+        ret, out, err = self._call(cmd, **kwargs)
+        return ret
+
+    def rmdir(self, path, **kwargs):
+        """
+        Removes the specified directory.
+        """
+        if 'recursive' in kwargs:
+            cmd = "rm -rf {}".format(path)
+        else:
+            cmd = "rmdir {}".format(path)
+        ret, out, err = self._call(cmd, **kwargs)
+        return ret
+
     def whoami(self, **kwargs):
         """
         Gets the name of the current user.
