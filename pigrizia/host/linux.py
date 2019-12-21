@@ -55,6 +55,37 @@ class Linux(Host):
         ret, out, err = self._call(cmd, **kwargs)
         return ret == 0
 
+    def permissions(self, path, **kwargs):
+        """
+        Gets the permissions for the specified path.
+        """
+
+        f = '%A' if 'human-readable' in kwargs else '%a'
+        cmd = "stat -c {} {}".format(f, path)
+        ret, out, err = self._call(cmd)
+        return out[0]
+
+    def set_permissions(self, path, **kwargs):
+        """
+        Set permission on a path.
+        """
+        if 'recursive' in kwargs:
+            if 'dirs' in kwargs:
+                cmd = 'find {} -type d -exec chmod {} {{}} +'.format(
+                        path, kwargs['dirs'])
+                retd, outd, errd = self._call(cmd, **kwargs)
+            if 'files' in kwargs:
+                cmd = 'find {} -type f -exec chmod {} {{}} +'.format(
+                        path, kwargs['files'])
+                retf, outf, errf = self._call(cmd, **kwargs)
+            return retd == 0 and retf == 0
+        else:
+            if ['permission'] in kwargs:
+                cmd = 'chmod {} {}'.format(path, kwargs['permission'])
+            else:
+                # TODO: exception here?
+                return 1
+
     def mkdir(self, path, **kwargs):
         """
         Creates the specified directory.
@@ -194,15 +225,17 @@ class Linux(Host):
         """
         Installs Pigrizia on this host.
         """
-        # TODO: It seems on Fedora (maybe also others) the directory
-        # /usr/local/lib/python3.7 is only readable by root. We should
-        # detect if this is the case.
+        # TODO: determine the Python version
+        pydir = '/usr/local/lib/python3.7'
+        if self.permissions(pydir) != '750':
+            logger.warn("Permissions on {} are wrong, fixing".format(
+                pydir))
+            self.set_permissions(pydir, recursive=True, dirs=755,
+                    files=644, sudo=True)
+
         # TODO: url should eventually be changed.
         cmd = "pip3 install git+https://github.com/lcabrini/pigrizia"
         ret, out, err = self._call(cmd, sudo=True, **kwargs)
-        print("RET: {}".format(ret))
-        print("OUT: {}".format(out))
-        print("ERR: {}".format(err))
 
     def _call(self, cmd, **kwargs):
         if 'sudo' in kwargs and kwargs['sudo'] is True:
