@@ -179,6 +179,31 @@ class Linux(Host):
         # Hopefully we don't get here, but ...
         return None
 
+    def has_pigrizia(self, **kwargs):
+        """
+        Checks if Pigrizia is already installed on this host.
+
+        :returns: True if Pigrizia is installed, otherwise False
+        :rtype: bool
+        """
+        cmd = "python3 -c 'import pigrizia'"
+        ret, out, err = self._call(cmd, **kwargs)
+        return ret == 0
+
+    def install_pigrizia(self, **kwargs):
+        """
+        Installs Pigrizia on this host.
+        """
+        # TODO: It seems on Fedora (maybe also others) the directory
+        # /usr/local/lib/python3.7 is only readable by root. We should
+        # detect if this is the case.
+        # TODO: url should eventually be changed.
+        cmd = "pip3 install git+https://github.com/lcabrini/pigrizia"
+        ret, out, err = self._call(cmd, sudo=True, **kwargs)
+        print("RET: {}".format(ret))
+        print("OUT: {}".format(out))
+        print("ERR: {}".format(err))
+
     def _call(self, cmd, **kwargs):
         if 'sudo' in kwargs and kwargs['sudo'] is True:
             return self.cmdh.sudo(cmd)
