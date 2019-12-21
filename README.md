@@ -81,3 +81,28 @@ Eventually, when I get far enough to make a release, it will stabilize,
 but for now, I get an idea and implement it. Over time, I may realize that
 some things annoy me, don't work like I expected, or that there is a 
 simpler way to do it. When that happens, I will change things around.
+
+## Contributing
+
+If you would like to help a young, but ambitious project out, welcome!
+
+I have a lot of things I need to implement because of work. Then there
+are a bunch of ideas I have, that I'd like to implement. On top of that,
+there are so many things that could be done that I haven't even thought 
+of.
+
+I'm currently using the issue tracker on GitHub as a sort of todo list
+for myself. (At my age, I need all the memory help I can get.) If you
+want to work on something, just signal me on the issue you are intersted
+in.
+
+If you peek at the code, you will see most of it is very naive. There
+are a whole bunch of tests that need to be added. Parts of the code are
+really clumsy and can be improved. Most of the code is not crash-proof
+at all at this point.
+
+I'm sure that much of it is not "pythonic" either. That is not really
+one of my personal goals, unless "being pythonic" also happens to 
+coincide with "making sense". But if you feel that the being pythonic
+gives the code some intrinsic value, feel free to fix and send me pull
+requests.
