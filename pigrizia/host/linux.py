@@ -210,6 +210,12 @@ class Issabel(CentOS):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+    def backup(self, **kwargs):
+        """
+
+        """
+        pass
+
     @staticmethod
     def detect(host):
         # ID in /etc/os-release is centos, not issabel.
