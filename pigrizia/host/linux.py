@@ -31,6 +31,15 @@ class Linux(Host):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+    # This is probably not how it should be done, but let's keep it 
+    # until a better idea comes along.
+    def python(self, **kwargs):
+        """
+        Gets this Linux host's Python subsystem.
+        """
+        from pigrizia.system.python import Python
+        return Python(self, **kwargs)
+
     def directory_exists(self, path, **kwargs):
         """ 
         Checks if the specified path exists and is a directory.
