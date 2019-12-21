@@ -264,3 +264,15 @@ class Ubuntu(Debian):
     @staticmethod
     def detect(host):
         return host.distro() == 'ubuntu'
+
+class Proxmox(Debian):
+    """
+    Representation of Proxmox.
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    @staticmethod
+    def detect(host):
+        return host.distro() and host.directory_exists('/etc/pve')

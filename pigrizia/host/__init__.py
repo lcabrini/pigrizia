@@ -61,7 +61,8 @@ def detect_host(**kwargs):
     """
     # TODO: this function has to be rewritten, because it is really clumsy.
     # for now it get the job done, however.
-    from .linux import Fedora, Issabel, CentOS, Ubuntu, Debian, Linux
+    from .linux import (Fedora, Issabel, CentOS, Ubuntu, Proxmox, 
+            Debian, Linux)
     
     linux = Linux(**kwargs)
     if Fedora.detect(linux):
@@ -76,6 +77,8 @@ def detect_host(**kwargs):
     elif Ubuntu.detect(linux):
         logger.info("detected Ubuntu")
         return Ubuntu(**kwargs)
+    elif Proxmox.detect(linux):
+        return Proxmox(**kwargs)
     elif Debian.detect(linux):
         logger.info("detected debian")
         return Debian(**kwargs)
