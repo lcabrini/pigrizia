@@ -5,6 +5,8 @@
 # https://opensource.org/licenses/MIT.
 
 from . import System
+from pigrizia.host import NotInstalled
+from pigrizia.command.handler import NoSuchCommand
 
 class Python(System):
     """
@@ -13,6 +15,10 @@ class Python(System):
 
     def __init__(self, host, **kwargs):
         super().__init__(host, **kwargs)
+        try:
+            self.version()
+        except NoSuchCommand:
+            raise NotInstalled()
 
     def version(self, **kwargs):
         """

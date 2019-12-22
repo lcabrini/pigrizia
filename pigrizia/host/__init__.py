@@ -13,6 +13,13 @@ class UnknownSystem(Exception):
     """
     pass
 
+class NotInstalled(Exception):
+    """
+    Represents something not being installed.
+    """
+    pass
+
+
 class UserError(Exception):
     """
     Base class for user management errors
