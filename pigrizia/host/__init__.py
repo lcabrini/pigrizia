@@ -4,8 +4,13 @@
 # license that can be found in the LICENSE file or at
 # https://opensource.org/licenses/MIT.
 
+import os
+import toml
+
 import logging
 logger = logging.getLogger()
+
+config_file = os.getenv('HOME') + '/.pigrizia/hosts.conf'
 
 class UnknownSystem(Exception):
     """
@@ -71,6 +76,20 @@ def detect_host(**kwargs):
     from .linux import (Fedora, Issabel, CentOS, Ubuntu, Proxmox, 
             Debian, Linux)
     
+    try:
+        config = toml.load(config_file)
+    except FileNotFoundError:
+        logger.warn("hosts configuration not found")
+        config = {}
+
+    # TODO: this could maybe be made a bit simpler?
+    if 'addr' not in kwargs and 'name' in kwargs:
+        name = kwargs['name']
+        if name in config:
+            kwargs['config'] = config[name]
+            if 'addr' in config[name]:
+                kwargs['addr'] = config[name]['addr']
+
     linux = Linux(**kwargs)
     if Fedora.detect(linux):
         logger.info("detected Fedora")
