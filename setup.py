@@ -21,6 +21,7 @@ setuptools.setup(
         packages=setuptools.find_packages(),
         install_requires=[
             'paramiko',
+            'toml'
             ],
         classifiers=[
             "Programming Language :: Python :: 3",
