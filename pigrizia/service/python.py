@@ -7,9 +7,9 @@
 from .service import Service, NotInstalled
 from pigrizia.command.handler import NoSuchCommand
 
-class Python(System):
+class Python(Service):
     """
-    This subsystem represents Python and related tools (such as pip).
+    This service represents Python and related tools (such as pip).
     """
 
     def __init__(self, host, **kwargs):

@@ -36,9 +36,9 @@ class Linux(Host):
     # until a better idea comes along.
     def python(self, **kwargs):
         """
-        Gets this Linux host's Python subsystem.
+        Gets this Linux host's Python service.
         """
-        from pigrizia.system.python import Python
+        from pigrizia.service.python import Python
         return Python(self, **kwargs)
 
     def directory_exists(self, path, **kwargs):
