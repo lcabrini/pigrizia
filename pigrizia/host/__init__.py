@@ -24,26 +24,6 @@ class NotInstalled(Exception):
     """
     pass
 
-
-class UserError(Exception):
-    """
-    Base class for user management errors
-    """
-    pass
-
-class UserExists(UserError):
-    """
-    Represents a user already existing (when trying to add the user).
-    """
-    pass
-
-class NoSuchUser(UserError):
-    """
-    Raised when trying to do something to a user that does not exist.
-    """
-    pass
-
-
 def get_host(**kwargs):
     """
     Gets a host.

@@ -8,8 +8,8 @@ import logging
 import string
 import secrets
 import crypt
-from .host import Host, UserExists, NoSuchUser
-
+from .host import Host
+from pigrizia.service.user import UserExists, NoSuchUser
 
 logger = logging.getLogger(__name__)
 
