@@ -4,6 +4,12 @@
 # license that can be found in the LICENSE file or at
 # https://opensource.org/licenses/MIT.
 
+class NotInstalled(Exception):
+    """
+    Represents something not being installed.
+    """
+    pass
+
 class Service:
     """
     This represents a service that a host provides. It is up to a subclass

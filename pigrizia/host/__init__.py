@@ -18,12 +18,6 @@ class UnknownSystem(Exception):
     """
     pass
 
-class NotInstalled(Exception):
-    """
-    Represents something not being installed.
-    """
-    pass
-
 def get_host(**kwargs):
     """
     Gets a host.

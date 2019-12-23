@@ -4,8 +4,7 @@
 # license that can be found in the LICENSE file or at
 # https://opensource.org/licenses/MIT.
 
-from . import System
-from pigrizia.host import NotInstalled
+from .service import Service, NotInstalled
 from pigrizia.command.handler import NoSuchCommand
 
 class Python(System):
