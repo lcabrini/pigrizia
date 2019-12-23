@@ -7,7 +7,7 @@
 import unittest
 from getpass import getuser, getpass
 from pigrizia.host.linux import Linux
-from pigrizia.host import UserExists, NoSuchUser
+from pigrizia.service.user import UserExists, NoSuchUser
 
 class BaseTestCases:
     class LinuxTestBase(unittest.TestCase):
