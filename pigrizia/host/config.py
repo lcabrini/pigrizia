@@ -8,25 +8,70 @@ import os
 import toml
 
 from pigrizia.config import config_dir
-host_config = '/'.join((config_dir, 'hosts.conf'))
+hosts_config = '/'.join((config_dir, 'hosts.conf'))
 
-def get_host_config(host):
-    try:
-        hosts = toml.load(host_config)
-    except FileNotFoundError:
-        return {}
+class HostConfig:
+    _label = None
+    _config = {}
 
-    if host in hosts:
-        return hosts[host]
+    def __init__(self, addr=None):
+        self.label = get_label_by_addr(addr)
+        self._config = get_host_config(self.label)
+        if not 'addr' in self._config:
+            self.addr = addr
+
+    @property
+    def label(self):
+        return self._label
+
+    @label.setter
+    def label(self, value):
+        if value != self.label:
+            hosts = _read_hosts_file()
+            if value is not None:
+                hosts[value] = hosts.pop(self.label, self._config)
+            else:
+                hosts.pop(self.label)
+        self._label = value
+        self._update()
+
+    @property
+    def addr(self):
+        return self._config['addr']
+
+    @addr.setter
+    def addr(self, value):
+        self._config['addr'] = value
+        self._update()
+
+    def _update(self):
+        hosts = _read_hosts_file()
+        if self.label is not None:
+            hosts[self.label] = self._config
+            _write_hosts_file(hosts)
+
+def get_host_config(label):
+    hosts = _read_hosts_file()
+    if label in hosts:
+        return hosts[label]
     else:
         return {}
 
-def set_host_config(host, config):
-    try:
-        hosts = toml.load(host_config)
-    except FileNotFoundError:
-        hosts = {}
+def get_label_by_addr(addr):
+    if addr is None:
+        return None
+    hosts = _read_hosts_file()
+    for label, config in hosts.items():
+        if 'addr' in config and config['addr'] == addr:
+            return label
+    return None
 
-    hosts[host] = config
-    with open(host_config, 'w') as f:
+def _read_hosts_file():
+    try:
+        return toml.load(hosts_config)
+    except FileNotFoundError:
+        return {}
+
+def _write_hosts_file(hosts):
+    with open(hosts_config, 'w') as f:
         toml.dump(hosts, f)
