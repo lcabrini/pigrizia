@@ -8,7 +8,8 @@ import logging
 import string
 import secrets
 import crypt
-from . import Host, UserExists, NoSuchUser
+from .host import Host, UserExists, NoSuchUser
+
 
 logger = logging.getLogger(__name__)
 
