@@ -41,9 +41,9 @@ account on a 192.168.0.184, sudo access and the same username as your
 local user.
 
     >>> from getpass import getpass
-    >>> from pigrizia.host import detect_host
+    >>> from pigrizia.host import get_host
     >>> passwd = getpass()
-    >>> host = detect_host('192.168.0.100')
+    >>> host = get_host(addr='192.168.0.100')
     >>> type(host)
     <class 'pigrizia.host.linux.Issabel'>
     >>> host.distro()
@@ -59,7 +59,7 @@ local user.
 
 By not passing in an addr, you would be working locally.
 
-    >>> host = detect_host(passwd=passwd)
+    >>> host = get_host(passwd=passwd)
     >>> host.distro()
     'fedora'
     >>> host.whoami()

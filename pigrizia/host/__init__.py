@@ -50,7 +50,7 @@ class Host:
     existance of the addr key among the keyword arguments.
 
     This class is a base class for actual hosts. It should never be
-    instantiated. Use :func:`~pigrizia.host.detect_host` instead, which
+    instantiated. Use :func:`~pigrizia.host.get_host` instead, which
     will return an appropriate host object. (See 
     :class:`~pigrizia.host.linux.Linux` for an example.)
     """
@@ -63,9 +63,9 @@ class Host:
             from pigrizia.command.handler.local import LocalHandler
             self.cmdh = LocalHandler(**kwargs)
 
-def detect_host(**kwargs):
+def get_host(**kwargs):
     """
-    This will detect the host
+    Gets a host.
 
     :return: a host object that (hopefully) represents the host at the
         specified address

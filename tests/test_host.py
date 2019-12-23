@@ -6,7 +6,7 @@
 
 import unittest
 from getpass import getuser, getpass
-from pigrizia.host import detect_host
+from pigrizia.host import get_host
 
 class BaseTestCases:
     class HostTestBase(unittest.TestCase):
@@ -14,18 +14,18 @@ class BaseTestCases:
         passwd = getpass()
 
 class TestLocalHost(BaseTestCases.HostTestBase):
-    def test_detect_host(self):
+    def test_get_host(self):
         # Works for me, change as needed for your tests.
         os = 'fedora'
-        host = detect_host(passwd=self.passwd)
+        host = get_host_host(passwd=self.passwd)
         self.assertEqual(host.os, os)
 
 class TestRemoteHost(BaseTestCases.HostTestBase):
     addr = '127.0.0.1'
 
-    def test_detect_host(self):
+    def test_get_host(self):
         # Change if you need to.
         os = 'fedora'
-        host = detect_host(addr=self.addr, user=self.user, 
+        host = get_host(addr=self.addr, user=self.user, 
                 passwd=self.passwd)
         self.assertEqual(host.os, os)
