@@ -1,4 +1,4 @@
-from . import Host
+from .host import Host
 
 class Windows(Host):
     """
