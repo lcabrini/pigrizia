@@ -32,8 +32,8 @@ class HostConfig:
                 hosts[value] = hosts.pop(self.label, self._config)
             else:
                 hosts.pop(self.label)
-        self._label = value
-        self._update()
+            self._label = value
+            _write_hosts_file(hosts)
 
     @property
     def addr(self):
