@@ -29,13 +29,13 @@ def get_host(**kwargs):
     from .linux import (Fedora, Issabel, CentOS, Ubuntu, Proxmox, 
             Debian, Linux)
 
-    if 'addr' not in kwargs and 'name' in kwargs:
-        host_config = get_host_config(kwargs['name'])
+    if 'addr' not in kwargs and 'label' in kwargs:
+        host_config = get_host_config(kwargs['label'])
         if 'addr' in host_config:
             kwargs['addr'] = host_config['addr']
         else:
             # TODO: is this the right error?
-            raise KeyError("unknown host: {}".format(kwargs['name']))
+            raise KeyError("unknown host: {}".format(kwargs['label']))
 
     linux = Linux(**kwargs)
     if Fedora.detect(linux):
