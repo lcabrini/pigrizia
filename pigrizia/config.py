@@ -16,12 +16,3 @@ try:
     os.makedirs(config_dir, 0o700, exist_ok=True)
 except FileExistsError:
     logger.info("{} already exists".format(config_dir))
-
-def has_setting():
-    pass
-
-def read_config(config, key, value):
-    pass
-
-def write_config():
-    pass

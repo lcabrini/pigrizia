@@ -5,12 +5,10 @@
 # https://opensource.org/licenses/MIT.
 
 import os
-import toml
 
 import logging
 logger = logging.getLogger()
-
-config_file = os.getenv('HOME') + '/.pigrizia/hosts.conf'
+from .config import get_host_config
 
 class UnknownSystem(Exception):
     """
@@ -30,20 +28,14 @@ def get_host(**kwargs):
     # for now it get the job done, however.
     from .linux import (Fedora, Issabel, CentOS, Ubuntu, Proxmox, 
             Debian, Linux)
-    
-    try:
-        config = toml.load(config_file)
-    except FileNotFoundError:
-        logger.warn("hosts configuration not found")
-        config = {}
 
-    # TODO: this could maybe be made a bit simpler?
     if 'addr' not in kwargs and 'name' in kwargs:
-        name = kwargs['name']
-        if name in config:
-            kwargs['config'] = config[name]
-            if 'addr' in config[name]:
-                kwargs['addr'] = config[name]['addr']
+        host_config = get_host_config(kwargs['name'])
+        if 'addr' in host_config:
+            kwargs['addr'] = host_config['addr']
+        else:
+            # TODO: is this the right error?
+            raise KeyError("unknown host: {}".format(kwargs['name']))
 
     linux = Linux(**kwargs)
     if Fedora.detect(linux):
