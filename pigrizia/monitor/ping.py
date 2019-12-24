@@ -13,7 +13,16 @@ from .monitor import Monitor
 
 class PingMonitor(Monitor):
     """
-    The ping monitor pings hosts and raises alerts based on the results.
+    This monitor pings hosts and reports the results. It compares these
+    results with configurable thresholds. If any result is above its
+    threshold value, an alarm is raised.
+
+    This class is currently partially functional. It cannot yet do
+    anything with alarms, because that part of the system is not yet
+    implemented.
+
+    Eventually there should also be a configurator for this monitor,
+    so that the user does not have to touch the TOML file directly.
     """
 
     def __init__(self, **kwargs):
@@ -22,7 +31,7 @@ class PingMonitor(Monitor):
 
     def monitor(self):
         """
-
+        Run this monitor. 
         """
         alarms = {}
         with ThreadPoolExecutor(max_workers=self.workers) as executor:
