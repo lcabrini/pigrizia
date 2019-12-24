@@ -9,7 +9,11 @@ from functools import partial
 from concurrent.futures import ThreadPoolExecutor
 import toml
 import pingparsing
+from pigrizia.config import config_dir
 from .monitor import Monitor
+
+# TODO: read global configuration directory
+config_file = '/usr/local/pigrizia/monitor/ping.conf'
 
 class PingMonitor(Monitor):
     """
@@ -85,7 +89,7 @@ class PingMonitor(Monitor):
 
     def _config(self):
         try:
-            config = toml.load('/home/lorenzo/Cortile/pigrizia/ping.toml')
+            config = toml.load('config_file')
         except FileNotFoundError:
             return 1
 
