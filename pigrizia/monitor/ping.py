@@ -1,0 +1,93 @@
+# Copyright 2019 Lorenzo Cabrini
+#
+# Use of this source code is governed by an MIT-style
+# license that can be found in the LICENSE file or at
+# https://opensource.org/licenses/MIT.
+
+import os
+from functools import partial
+from concurrent.futures import ThreadPoolExecutor
+import toml
+import pingparsing
+from .monitor import Monitor
+
+class PingMonitor(Monitor):
+    """
+    The ping monitor pings hosts and raises alerts based on the results.
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._config()
+
+    def monitor(self):
+        """
+
+        """
+        alarms = {}
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            futures = [
+                    (host, executor.submit(partial(self._ping, host, 30)))
+                    for host in self._hosts
+                    ]
+            for h, f in futures:
+                res = f.result()
+                if res is None:
+                    #print("foo happened to: {}".format(h))
+                    if not h in alarms:
+                        alarms[h] = []
+                    alarms[h].append({ #('critical', 'host-down'))
+                        'alarm': 'down',
+                        'severity': 'critical'})
+                else:
+                    alarm_list = self._alarms_by_host(h)
+                    for alarm in alarm_list:
+                        #print("ALARM: {}".format(alarm))
+                        para = alarm['parameter']
+                        hostval = res[para]
+                        paraval = alarm['threshold']
+                        if hostval > paraval:
+                            if not h in alarms:
+                                alarms[h] = []
+
+                            alarms[h].append({ #(alarm['severity'], para))
+                                'alarm': para,
+                                'severity': alarm['severity']})
+                        
+                        #else:
+                            #print("OK: {} on {}".format(para, h))
+                   
+                #print("Result is: {}".format(r))
+        print("Alarms: {}".format(alarms))
+        # TODO: we should send these alarms someplace
+
+    def _alarms_by_host(self, host):
+        # print("HOST: {}".format(host))
+        for nw in self._networks:
+            if host in nw['hosts']:
+                return nw['alarm']
+        return []
+
+    def _ping(self, host, count):
+        parsing = pingparsing.PingParsing()
+        transmitter = pingparsing.PingTransmitter()
+        transmitter.destination = host
+        transmitter.count = count
+        result = transmitter.ping()
+        if result.returncode == 0:
+            return parsing.parse(result).as_dict()
+        else:
+            return None
+
+    def _config(self):
+        try:
+            config = toml.load('/home/lorenzo/Cortile/pigrizia/ping.toml')
+        except FileNotFoundError:
+            return 1
+        
+        self._networks = config['network']
+        self._hosts = []
+        for nw in self._networks:
+            self._hosts += nw['hosts']
+        #print("all hosts: {}".format(self._hosts))
+        #self.targets = config['network']
