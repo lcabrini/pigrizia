@@ -25,9 +25,10 @@ class PingMonitor(Monitor):
 
         """
         alarms = {}
-        with ThreadPoolExecutor(max_workers=10) as executor:
+        with ThreadPoolExecutor(max_workers=self.workers) as executor:
             futures = [
-                    (host, executor.submit(partial(self._ping, host, 30)))
+                    (host, executor.submit(partial(self._ping, host, 
+                        self.count)))
                     for host in self._hosts
                     ]
             for h, f in futures:
@@ -56,7 +57,6 @@ class PingMonitor(Monitor):
         # TODO: we should send these alarms someplace
 
     def _alarms_by_host(self, host):
-        # print("HOST: {}".format(host))
         for nw in self._networks:
             if host in nw['hosts']:
                 return nw['alarm']
@@ -78,7 +78,15 @@ class PingMonitor(Monitor):
             config = toml.load('/home/lorenzo/Cortile/pigrizia/ping.toml')
         except FileNotFoundError:
             return 1
-        
+
+        glob = config['global']
+        self.count = 10
+        if 'count' in glob:
+            self.count = glob['count']
+        self.workers = 5
+        if 'workers' in glob:
+            self.workers = glob['workers']
+
         self._networks = config['network']
         self._hosts = []
         for nw in self._networks:
