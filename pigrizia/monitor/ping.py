@@ -58,9 +58,9 @@ class PingMonitor(Monitor):
         # TODO: we should send these alarms someplace
 
     def _alarms_by_host(self, host):
-        for nw in self._networks:
-            if host in nw['hosts']:
-                return nw['alarm']
+        for network in self._networks:
+            if host in network['hosts']:
+                return network['alarm']
         return []
 
     def _ping(self, host, count):
