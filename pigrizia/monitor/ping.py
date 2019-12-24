@@ -27,8 +27,9 @@ class PingMonitor(Monitor):
         alarms = {}
         with ThreadPoolExecutor(max_workers=self.workers) as executor:
             futures = [
-                    (host, executor.submit(partial(self._ping, host, 
-                        self.count)))
+                    #(host, executor.submit(partial(self._ping, host,
+                    #    self.count)))
+                    (host, executor.submit(self._ping, host, self.count))
                     for host in self._hosts
                     ]
             for h, f in futures:
