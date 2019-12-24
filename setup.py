@@ -19,7 +19,7 @@ setuptools.setup(
         long_description=longdesc,
         url="https://github.com/lcabrini/pigrizia",
         packages=setuptools.find_packages(),
-        data_files=[('conf/monitor/', ['conf/ping.conf'])],
+        data_files=[('conf/monitor/', ['conf/monitor/ping.conf'])],
         install_requires=[
             'paramiko',
             'toml'
