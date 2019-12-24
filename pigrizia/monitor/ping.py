@@ -33,16 +33,14 @@ class PingMonitor(Monitor):
             for h, f in futures:
                 res = f.result()
                 if res is None:
-                    #print("foo happened to: {}".format(h))
                     if not h in alarms:
                         alarms[h] = []
-                    alarms[h].append({ #('critical', 'host-down'))
+                    alarms[h].append({ 
                         'alarm': 'down',
                         'severity': 'critical'})
                 else:
                     alarm_list = self._alarms_by_host(h)
                     for alarm in alarm_list:
-                        #print("ALARM: {}".format(alarm))
                         para = alarm['parameter']
                         hostval = res[para]
                         paraval = alarm['threshold']
@@ -50,14 +48,10 @@ class PingMonitor(Monitor):
                             if not h in alarms:
                                 alarms[h] = []
 
-                            alarms[h].append({ #(alarm['severity'], para))
+                            alarms[h].append({ 
                                 'alarm': para,
                                 'severity': alarm['severity']})
                         
-                        #else:
-                            #print("OK: {} on {}".format(para, h))
-                   
-                #print("Result is: {}".format(r))
         print("Alarms: {}".format(alarms))
         # TODO: we should send these alarms someplace
 
@@ -89,5 +83,3 @@ class PingMonitor(Monitor):
         self._hosts = []
         for nw in self._networks:
             self._hosts += nw['hosts']
-        #print("all hosts: {}".format(self._hosts))
-        #self.targets = config['network']
