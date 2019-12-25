@@ -90,7 +90,7 @@ class PingMonitor(Monitor):
 
     def _config(self):
         try:
-            config = toml.load('config_file')
+            config = toml.load(config_file)
         except FileNotFoundError:
             print("we fucked up: {}".format(config_file))
             return 1
