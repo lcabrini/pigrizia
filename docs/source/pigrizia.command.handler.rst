@@ -12,10 +12,10 @@ pigrizia.command.handler.local module
    :undoc-members:
    :show-inheritance:
 
-pigrizia.command.handler.paramiko module
-----------------------------------------
+pigrizia.command.handler.remote module
+--------------------------------------
 
-.. automodule:: pigrizia.command.handler.paramiko
+.. automodule:: pigrizia.command.handler.remote
    :members:
    :undoc-members:
    :show-inheritance:
