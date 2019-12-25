@@ -4,6 +4,7 @@
 # license that can be found in the LICENSE file or at
 # https://opensource.org/licenses/MIT.
 
+import sys
 import os
 from functools import partial
 from concurrent.futures import ThreadPoolExecutor
@@ -13,7 +14,7 @@ from pigrizia.config import config_dir
 from .monitor import Monitor
 
 # TODO: read global configuration directory
-config_file = '/usr/local/pigrizia/monitor/ping.conf'
+config_file = sys.prefix + '/pigrizia/conf/monitor/ping.conf'
 
 class PingMonitor(Monitor):
     """
@@ -32,12 +33,13 @@ class PingMonitor(Monitor):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._config()
+        self._failures = {}
 
     def monitor(self):
         """
         Run this monitor. 
         """
-        alarms = {}
+        #alarms = {}
         with ThreadPoolExecutor(max_workers=self.workers) as executor:
             futures = [
                     #(host, executor.submit(partial(self._ping, host,
@@ -48,11 +50,7 @@ class PingMonitor(Monitor):
             for h, f in futures:
                 res = f.result()
                 if res is None:
-                    if not h in alarms:
-                        alarms[h] = []
-                    alarms[h].append({ 
-                        'alarm': 'down',
-                        'severity': 'critical'})
+                    self._add_failure(h, 'down', 'critical')
                 else:
                     alarm_list = self._alarms_by_host(h)
                     for alarm in alarm_list:
@@ -60,13 +58,8 @@ class PingMonitor(Monitor):
                         hostval = res[para]
                         paraval = alarm['threshold']
                         if hostval > paraval:
-                            if not h in alarms:
-                                alarms[h] = []
-
-                            alarms[h].append({ 
-                                'alarm': para,
-                                'severity': alarm['severity']})
-                        
+                            self._add_failure(h, para, alarm['severity'])
+                                                    
         print("Alarms: {}".format(alarms))
         # TODO: we should send these alarms someplace
 
@@ -105,3 +98,12 @@ class PingMonitor(Monitor):
         self._hosts = []
         for nw in self._networks:
             self._hosts += nw['hosts']
+
+    def _add_failure(host, test, severity):
+        if not host in self._failures:
+            self._failures[host] = []
+        self._failures.append({
+            'test': test,
+            'severity': severity})
+
+
