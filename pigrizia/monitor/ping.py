@@ -32,19 +32,19 @@ class PingMonitor(Monitor):
 
     count = 10
     workers = 20
-    _hosts = []
-    _networks = {}
+    hosts = []
+    networks = {}
+    failures = {}
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._config()
-        self._failures = {}
 
     def monitor(self):
         """
         Run this monitor. 
         """
-        if len(self._networks) < 1:
+        if len(self.networks) < 1:
             raise NoTests()
 
         #alarms = {}
@@ -53,7 +53,7 @@ class PingMonitor(Monitor):
                     #(host, executor.submit(partial(self._ping, host,
                     #    self.count)))
                     (host, executor.submit(self._ping, host, self.count))
-                    for host in self._hosts
+                    for host in self.hosts
                     ]
             for h, f in futures:
                 res = f.result()
@@ -68,11 +68,11 @@ class PingMonitor(Monitor):
                         if hostval > paraval:
                             self._add_failure(h, para, alarm['severity'])
                                                     
-        print("Alarms: {}".format(self._failures))
+        print("Alarms: {}".format(self.failures))
         # TODO: we should send these alarms someplace
 
     def _alarms_by_host(self, host):
-        for network in self._networks:
+        for network in self.networks:
             if host in network['hosts']:
                 return network['alarm']
         return []
@@ -92,7 +92,7 @@ class PingMonitor(Monitor):
         try:
             config = toml.load(config_file)
         except FileNotFoundError:
-            print("we fucked up: {}".format(config_file))
+            # TODO: we need to do something here.
             return 1
 
         glob = config['global']
@@ -101,14 +101,14 @@ class PingMonitor(Monitor):
         if 'workers' in glob:
             self.workers = glob['workers']
 
-        self._networks = config['network']
-        for nw in self._networks:
-            self._hosts += nw['hosts']
+        self.networks = config['network']
+        for nw in self.networks:
+            self.hosts += nw['hosts']
 
     def _add_failure(self, host, test, severity):
-        if not host in self._failures:
-            self._failures[host] = []
-        self._failures[host].append({
+        if not host in self.failures:
+            self.failures[host] = []
+        self.failures[host].append({
             'test': test,
             'severity': severity})
 
