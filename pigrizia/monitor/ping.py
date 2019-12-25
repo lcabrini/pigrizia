@@ -11,7 +11,7 @@ from concurrent.futures import ThreadPoolExecutor
 import toml
 import pingparsing
 from pigrizia.config import config_dir
-from .monitor import Monitor
+from .monitor import Monitor, NoTests
 
 # TODO: read global configuration directory
 config_file = sys.prefix + '/pigrizia/conf/monitor/ping.conf'
@@ -33,6 +33,7 @@ class PingMonitor(Monitor):
     count = 10
     workers = 20
     _hosts = []
+    _networks = {}
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -43,6 +44,9 @@ class PingMonitor(Monitor):
         """
         Run this monitor. 
         """
+        if len(self._networks) < 1:
+            raise NoTests()
+
         #alarms = {}
         with ThreadPoolExecutor(max_workers=self.workers) as executor:
             futures = [
@@ -88,6 +92,7 @@ class PingMonitor(Monitor):
         try:
             config = toml.load('config_file')
         except FileNotFoundError:
+            print("we fucked up: {}".format(config_file))
             return 1
 
         glob = config['global']
@@ -106,5 +111,3 @@ class PingMonitor(Monitor):
         self._failures.append({
             'test': test,
             'severity': severity})
-
-
