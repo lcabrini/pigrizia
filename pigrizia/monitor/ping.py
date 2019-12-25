@@ -99,8 +99,8 @@ class PingMonitor(Monitor):
             self.workers = global_['workers']
 
         self.networks = config['network']
-        for nw in self.networks:
-            self.hosts += nw['hosts']
+        for network in self.networks:
+            self.hosts += network['hosts']
 
     def _add_failure(self, host, test, severity):
         if not host in self.failures:
