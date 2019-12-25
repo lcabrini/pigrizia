@@ -220,6 +220,18 @@ class Linux(Host):
         # Hopefully we don't get here, but ...
         return None
 
+    def read_file(self, fname, **kwargs):
+        """
+        Reads in and returns the specified file.
+
+        :param str fname: the name of the file
+        :returns: the content of the file
+        :rtype: str
+        """
+        cmd = "cat {}".format(fname)
+        ret, out, err = self._call(cmd, **kwargs)
+        return '\n'.join(out)
+
     def has_pigrizia(self, **kwargs):
         """
         Checks if Pigrizia is already installed on this host.
