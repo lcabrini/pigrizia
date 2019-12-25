@@ -31,8 +31,7 @@ The following is an example of ``ping.conf``
 
         [[network.test]]
         parameter = 'packet_loss_rate'
-        threshold = 1.0
-        severity = 'warn'
+        thresholds = [0.5, 1.0, 3.0]
 
     [[network]]
     label = 'remote'
@@ -40,8 +39,7 @@ The following is an example of ``ping.conf``
 
         [[network.test]]
         parameter = 'rtt_max'
-        threshold = 350
-        severity = 'notice'
+        thresholds = [300, 350, 380]
 
 The first section is **global**. At the current time, there is not much
 here. You can set the number of packets that pings should send. You
@@ -55,10 +53,9 @@ The network section allows you to group hosts from which you expect
 similar results. It is of course fully acceptable to just put all the
 hosts in a single network section.
 
-Each test consists of three things: the **parameter** to be checked, the
-**threshold** value which indicates the point at which the test fails and
-finally the **severity**, that is how serious a failure in this test should
-be considered.
+Each test consists of two things: the **parameter** to be checked and the
+**thresholds**, which is a list of three numbers that represent
+``NOTICE``, ``WARNING`` and ``CRITICAL``.
 """
 
 import sys
@@ -191,8 +188,6 @@ class PingMonitor(Monitor):
 
     The class uses the configuration provided by the the 
     :class:`.PingConfigurator` class.
-
-
     """
 
     failures = []
@@ -213,25 +208,32 @@ class PingMonitor(Monitor):
             for host, future in self._make_futures(executor):
                 result = future.result()
                 if result is None:
-                    self.failures.append((host, {'parameter': 'host_up'}))
+                    self.failures.append((host, 'Critical', 
+                        {'parameter': 'host_up'}))
                 else:
                     for test in self.config.host_tests(host):
-                        if not self.passed(result, test):
-                            self.failures.append((host, test))
+                        level = self.get_level(result, test)
+                        if level is not None:
+                            self.failures.append((host, level, test))
                                                     
         print("Failed tests: {}".format(self.failures))
         # TODO: we should send these alarms someplace
 
-    def passed(self, result, test):
+    def get_level(self, result, test):
         """
 
         """
+        levels = ('Notice', 'Warning', 'Critical')
+        severity = None
         parameter = test['parameter']
         result_value = result[parameter]
-        test_value = test['threshold']
-        return result_value < test_value
-
-
+        for index, threshold in enumerate(test['thresholds']):
+            if result_value < threshold:
+                return severity
+            else:
+                severity = levels[index]
+        return severity
+            
     def _tests_by_host(self, host):
         for network in self.networks:
             if host in network['hosts']:
