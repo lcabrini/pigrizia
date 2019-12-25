@@ -112,7 +112,7 @@ class PingMonitor(Monitor):
             'test': test,
             'severity': severity})
 
-def PingConfigurator:
+class PingConfigurator:
     """
     This class is used to configure a ping monitor on a host.
     """
