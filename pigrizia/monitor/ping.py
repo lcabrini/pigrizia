@@ -11,10 +11,106 @@ from concurrent.futures import ThreadPoolExecutor
 import toml
 import pingparsing
 from pigrizia.config import config_dir
+from pigrizia.host import get_host
 from .monitor import Monitor, NoTests
 
 # TODO: read global configuration directory
 config_file = sys.prefix + '/pigrizia/conf/monitor/ping.conf'
+
+class PingConfigurator:
+    """
+    This class is used to configure a ping monitor on a host.
+    """
+
+    def __init__(self, **kwargs):
+        if 'host' in kwargs:
+            self.host = kwargs['host']
+        else:
+            self.host = get_host()
+        self.config = self.configure()
+
+    @property
+    def ping_count(self):
+        """
+
+        """
+        return self.config['global']['ping_count']
+
+    @ping_count.setter
+    def ping_count(self, count):
+        self.config['global']['ping_count'] = count
+
+    @property
+    def workers(self):
+        """
+
+        """
+        return self.config['global']['workers']
+
+    @workers.setter
+    def workers(self, workers):
+        self.config['global']['workers'] = workers
+
+    @property
+    def networks(self):
+        """
+
+        """
+        return [network['label'] for network in self.config['network']]
+
+    @property
+    def hosts(self):
+        """
+
+        """
+        hosts = []
+        for network in self.config['network']:
+            hosts += network['hosts']
+        return hosts
+
+    @property
+    def test_count(self):
+        count = 0
+        for network in self.config['network']:
+            count += len(network['test'])
+        return count
+    
+    def host_network(self, host):
+        """
+
+        """
+        for network in self.config['network']:
+            if host in network['hosts']:
+                return network['label']
+        return None
+    
+    def network_tests(self, label):
+        """
+
+        """
+        for network in self.config['network']:
+            if network['label'] == label:
+                return network['test']
+        return None
+
+    def host_tests(self, host):
+        """
+
+        """
+        network = self.host_network(host)
+        return self.network_tests(network)
+
+    def configure(self):
+        """
+        
+        """
+        try:
+            f = self.host.read_file(config_file)
+            config = toml.loads(f)
+        except FileNotFoundError:
+            # TODO: we need to do something here.
+            return 1
+        return config
 
 class PingMonitor(Monitor):
     """
@@ -30,50 +126,59 @@ class PingMonitor(Monitor):
     so that the user does not have to touch the TOML file directly.
     """
 
-    count = 10
-    workers = 20
-    hosts = []
-    networks = {}
-    failures = {}
+    failures = []
+    config = PingConfigurator()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._config()
 
     def monitor(self):
         """
         Run this monitor. 
         """
-        if len(self.networks) < 1:
+        if self.config.test_count < 1:
             raise NoTests()
 
-        with ThreadPoolExecutor(max_workers=self.workers) as executor:
-            futures = [
-                    (host, executor.submit(self._ping, host, self.count))
-                    for host in self.hosts
-                    ]
-            for h, f in futures:
-                res = f.result()
-                if res is None:
-                    self._add_failure(h, 'host_up', 'critical')
+        workers = self.config.workers
+        with ThreadPoolExecutor(max_workers=workers) as executor:
+            for host, future in self._make_futures(executor):
+                result = future.result()
+                if result is None:
+                    self.failures.append((host, {'parameter': 'host_up'}))
                 else:
-                    alarm_list = self._alarms_by_host(h)
-                    for alarm in alarm_list:
-                        para = alarm['parameter']
-                        hostval = res[para]
-                        paraval = alarm['threshold']
-                        if hostval > paraval:
-                            self._add_failure(h, para, alarm['severity'])
+                    for test in self.config.host_tests(host):
+                        if not self.passed(result, test):
+                            self.failures.append((host, test))
                                                     
-        print("Alarms: {}".format(self.failures))
+        print("Failed tests: {}".format(self.failures))
         # TODO: we should send these alarms someplace
 
-    def _alarms_by_host(self, host):
+    def passed(self, result, test):
+        """
+
+        """
+        parameter = test['parameter']
+        result_value = result[parameter]
+        test_value = test['threshold']
+        return result_value < test_value
+
+
+    def _tests_by_host(self, host):
         for network in self.networks:
             if host in network['hosts']:
-                return network['alarm']
+                return network['test']
         return []
 
+    def _host_has_test(self, host, test):
+        for network in self.networks:
+            if host in network['hosts']:
+                return test in network['test']['parameter']
+
+    def _get_test_for_host(self, host, test):
+        for network in self.networks:
+            if host in network['hosts']:
+                pass
+                
     def _ping(self, host, count):
         parsing = pingparsing.PingParsing()
         transmitter = pingparsing.PingTransmitter()
@@ -85,34 +190,19 @@ class PingMonitor(Monitor):
         else:
             return None
 
-    def _config(self):
-        try:
-            config = toml.load(config_file)
-        except FileNotFoundError:
-            # TODO: we need to do something here.
-            return 1
-
-        global_ = config['global']
-        if 'count' in global_:
-            self.count = global_['count']
-        if 'workers' in global_:
-            self.workers = global_['workers']
-
-        self.networks = config['network']
-        for network in self.networks:
-            self.hosts += network['hosts']
-
-    def _add_failure(self, host, test, severity):
+    def _add_failure(self, host, test, threshold, severity):
         if not host in self.failures:
             self.failures[host] = []
         self.failures[host].append({
             'test': test,
-            'severity': severity})
+            'threshold': threshold,
+            'severity': severity,})
 
-class PingConfigurator:
-    """
-    This class is used to configure a ping monitor on a host.
-    """
+    def _make_futures(self, executor):
+        ping_count = self.config.ping_count
+        return [
+            (host, executor.submit(self._ping, host, ping_count))
+            for host in self.config.hosts
+            ]
 
-    def __init__(self, host, **kwargs):
-        pass
+
