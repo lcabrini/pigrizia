@@ -4,6 +4,12 @@
 # license that can be found in the LICENSE file or at
 # https://opensource.org/licenses/MIT.
 
+class NoTests(Exception):
+    """
+    This error is raised if a monitor is run without any tests defined.
+    """
+    pass
+
 class Monitor:
     """
 
