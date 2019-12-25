@@ -47,18 +47,15 @@ class PingMonitor(Monitor):
         if len(self.networks) < 1:
             raise NoTests()
 
-        #alarms = {}
         with ThreadPoolExecutor(max_workers=self.workers) as executor:
             futures = [
-                    #(host, executor.submit(partial(self._ping, host,
-                    #    self.count)))
                     (host, executor.submit(self._ping, host, self.count))
                     for host in self.hosts
                     ]
             for h, f in futures:
                 res = f.result()
                 if res is None:
-                    self._add_failure(h, 'down', 'critical')
+                    self._add_failure(h, 'host_up', 'critical')
                 else:
                     alarm_list = self._alarms_by_host(h)
                     for alarm in alarm_list:
@@ -95,11 +92,11 @@ class PingMonitor(Monitor):
             # TODO: we need to do something here.
             return 1
 
-        glob = config['global']
-        if 'count' in glob:
-            self.count = glob['count']
-        if 'workers' in glob:
-            self.workers = glob['workers']
+        global_ = config['global']
+        if 'count' in global_:
+            self.count = global_['count']
+        if 'workers' in global_:
+            self.workers = global_['workers']
 
         self.networks = config['network']
         for nw in self.networks:
