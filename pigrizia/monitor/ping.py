@@ -233,22 +233,6 @@ class PingMonitor(Monitor):
             else:
                 severity = levels[index]
         return severity
-            
-    def _tests_by_host(self, host):
-        for network in self.networks:
-            if host in network['hosts']:
-                return network['test']
-        return []
-
-    def _host_has_test(self, host, test):
-        for network in self.networks:
-            if host in network['hosts']:
-                return test in network['test']['parameter']
-
-    def _get_test_for_host(self, host, test):
-        for network in self.networks:
-            if host in network['hosts']:
-                pass
                 
     def _ping(self, host, count):
         parsing = pingparsing.PingParsing()
@@ -260,14 +244,6 @@ class PingMonitor(Monitor):
             return parsing.parse(result).as_dict()
         else:
             return None
-
-    def _add_failure(self, host, test, threshold, severity):
-        if not host in self.failures:
-            self.failures[host] = []
-        self.failures[host].append({
-            'test': test,
-            'threshold': threshold,
-            'severity': severity,})
 
     def _make_futures(self, executor):
         ping_count = self.config.ping_count
