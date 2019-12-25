@@ -111,3 +111,11 @@ class PingMonitor(Monitor):
         self._failures[host].append({
             'test': test,
             'severity': severity})
+
+def PingConfigurator:
+    """
+    This class is used to configure a ping monitor on a host.
+    """
+
+    def __init__(self, host, **kwargs):
+        pass
