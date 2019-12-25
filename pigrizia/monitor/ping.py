@@ -30,6 +30,10 @@ class PingMonitor(Monitor):
     so that the user does not have to touch the TOML file directly.
     """
 
+    count = 10
+    workers = 20
+    _hosts = []
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._config()
@@ -60,7 +64,7 @@ class PingMonitor(Monitor):
                         if hostval > paraval:
                             self._add_failure(h, para, alarm['severity'])
                                                     
-        print("Alarms: {}".format(alarms))
+        print("Alarms: {}".format(self._failures))
         # TODO: we should send these alarms someplace
 
     def _alarms_by_host(self, host):
@@ -87,15 +91,12 @@ class PingMonitor(Monitor):
             return 1
 
         glob = config['global']
-        self.count = 10
         if 'count' in glob:
             self.count = glob['count']
-        self.workers = 5
         if 'workers' in glob:
             self.workers = glob['workers']
 
         self._networks = config['network']
-        self._hosts = []
         for nw in self._networks:
             self._hosts += nw['hosts']
 
