@@ -90,7 +90,7 @@ class Linux(Host):
                 retf, outf, errf = self._call(cmd, **kwargs)
             return retd == 0 and retf == 0
         else:
-            if ['permission'] in kwargs:
+            if 'permission' in kwargs:
                 cmd = 'chmod {} {}'.format(path, kwargs['permission'])
             else:
                 # TODO: exception here?
