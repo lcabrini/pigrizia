@@ -232,6 +232,17 @@ class Linux(Host):
         ret, out, err = self._call(cmd, **kwargs)
         return '\n'.join(out)
 
+    def mktemp(self, **kwargs):
+        """
+        Create a temporary file.
+
+        :returns: the name of the temporary file
+        :rtype: str
+        """
+        cmd = "mktemp"
+        ret, out, err = self._call(cmd, **kwargs)
+        return out[0]
+
     def has_pigrizia(self, **kwargs):
         """
         Checks if Pigrizia is already installed on this host.
