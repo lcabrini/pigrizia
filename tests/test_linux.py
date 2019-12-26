@@ -5,6 +5,8 @@
 # https://opensource.org/licenses/MIT.
 
 import unittest
+import os
+import tempfile
 from getpass import getuser, getpass
 from pigrizia.host.linux import Linux
 from pigrizia.service.user import UserExists, NoSuchUser
@@ -51,6 +53,14 @@ class BaseTestCases:
 
         def test_removing_nonexisting_user(self):
             self.assertRaises(NoSuchUser, self.host.userdel, "bimbaz")
+
+        def test_set_permissions(self):
+            fp, fname = tempfile.mkstemp()
+            self.host.set_permissions(fname, permission=0o666)
+            stat = os.stat(fname)
+            perm = oct(stat.st_mode) and 0o666
+            fp.close()
+            self.assertEqual(perm, 0o666)
 
 class TestLocalLinux(BaseTestCases.LinuxTestBase):
     def setUp(self):
