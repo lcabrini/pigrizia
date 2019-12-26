@@ -62,6 +62,13 @@ class BaseTestCases:
             fp.close()
             self.assertEqual(perm, 0o666)
 
+        def test_mktemp(self):
+            tmpfile = self.host.mktemp()
+            # TODO: maybe this is dumb, since $TMPDIR might be set to
+            # a different location.
+            self.assertTrue(tmpfile.startswith("/tmp/"))
+            # TODO: we should probably remove tmpfile after we are done.
+
 class TestLocalLinux(BaseTestCases.LinuxTestBase):
     def setUp(self):
         self.host = Linux(user=self.user, passwd=self.passwd)

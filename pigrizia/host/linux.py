@@ -250,6 +250,7 @@ class Linux(Host):
             cmd += " -d"
         if 'tmpdir' in kwargs:
             cmd += " -p {}".format(kwargs['tmpdir'])
+
         ret, out, err = self._call(cmd, **kwargs)
         if ret != 0:
             raise CommandFailed('\n'.join(err))
