@@ -6,6 +6,15 @@
 
 from .config import HostConfig
 
+class CommandFailed(Exception):
+    """
+    This is a generic way to indicate that a command didn't work. If the
+    command failed due to specific reasons, such as a user already 
+    existing, a file cannot be created, permission errors, etc., then it
+    is better to raise a more specific exception.
+    """
+    pass
+
 class Host:
     """
     A host represents a machine on the network that you can connect to.
