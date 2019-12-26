@@ -76,5 +76,20 @@ class LocalHandler(Handler):
         err = err.decode().splitlines() if err else []
         return p.returncode, out, err
 
+    def copy(self, src, dest, **kwargs):
+        """
+        Copies a file.
+
+        :param str src: the file to copy
+        :param str dest: the location to copy to.
+        :return tuple: the exit code (``int``), stdout (``list``) and 
+            stderr (``list``)
+        """
+        cmd = "cp {} {}".format(src, dest)
+        if 'sudo' in kwargs and kwargs['sudo'] == True:
+            return this.sudo(cmd, **kwargs)
+        else:
+            return this.do(cmd, **kwargs)
+
     def interact(self, script, **kwargs):
         pass
