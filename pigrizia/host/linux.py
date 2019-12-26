@@ -236,10 +236,14 @@ class Linux(Host):
         """
         Create a temporary file.
 
+        :param bool create_dir: if True creates a directory, otherwise a
+            file (default is ``False``)
         :returns: the name of the temporary file
         :rtype: str
         """
         cmd = "mktemp"
+        if 'create_dir' in kwargs and kwargs['create_dir'] == True:
+            cmd += " -d"
         ret, out, err = self._call(cmd, **kwargs)
         return out[0]
 
