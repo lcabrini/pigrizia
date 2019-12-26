@@ -8,7 +8,7 @@ import logging
 import string
 import secrets
 import crypt
-from .host import Host
+from .host import Host, CommandFailed
 from pigrizia.service.user import UserExists, NoSuchUser
 
 logger = logging.getLogger(__name__)
@@ -240,11 +240,14 @@ class Linux(Host):
             file (default is ``False``)
         :returns: the name of the temporary file
         :rtype: str
+        :raises CommandFailed: if the mktemp command failed
         """
         cmd = "mktemp"
         if 'create_dir' in kwargs and kwargs['create_dir'] == True:
             cmd += " -d"
         ret, out, err = self._call(cmd, **kwargs)
+        if ret != 0:
+            raise CommandFailed('\n'.join(err))
         return out[0]
 
     def has_pigrizia(self, **kwargs):
