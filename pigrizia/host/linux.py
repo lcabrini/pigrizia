@@ -238,6 +238,9 @@ class Linux(Host):
 
         :param bool create_dir: if True creates a directory, otherwise a
             file (default is ``False``)
+        :param str tmpdir: the directory in which the temporary file or
+            directory is created (default is ``$TMPDIR`` if set, otherwise
+            ``/tmp``)
         :returns: the name of the temporary file
         :rtype: str
         :raises CommandFailed: if the mktemp command failed
@@ -245,6 +248,8 @@ class Linux(Host):
         cmd = "mktemp"
         if 'create_dir' in kwargs and kwargs['create_dir'] == True:
             cmd += " -d"
+        if 'tmpdir' in kwargs:
+            cmd += " -p {}".format(kwargs['tmpdir'])
         ret, out, err = self._call(cmd, **kwargs)
         if ret != 0:
             raise CommandFailed('\n'.join(err))
