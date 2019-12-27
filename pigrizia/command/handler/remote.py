@@ -96,6 +96,9 @@ class RemoteHandler(Handler):
         :return tuple: the exit code (``int``), stdout (``list``) and 
             stderr (``list``)
         """
+        # TODO: I think it is necessary to first copy it to the remote host
+        # as a temporary file, then copy it to it's final location. The
+        # reason is that the final destination may require sudo access.
         scp = SCPClient(self.ssh.get_transport())
         scp.put(src, remote_path=dest)
         scp.close()
