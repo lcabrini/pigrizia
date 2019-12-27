@@ -87,9 +87,9 @@ class LocalHandler(Handler):
         """
         cmd = "cp {} {}".format(src, dest)
         if 'sudo' in kwargs and kwargs['sudo'] == True:
-            return this.sudo(cmd, **kwargs)
+            return self.sudo(cmd, **kwargs)
         else:
-            return this.do(cmd, **kwargs)
+            return self.do(cmd, **kwargs)
 
     def interact(self, script, **kwargs):
         pass
