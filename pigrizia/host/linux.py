@@ -239,6 +239,7 @@ class Linux(Host):
         """
         with tempfile.NamedTemporaryFile() as f:
             f.write(content.encode())
+            f.flush()
             ret, out, err = self.cmdh.copy(f.name, fname)
 
     def mktemp(self, **kwargs):
