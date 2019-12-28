@@ -69,6 +69,14 @@ class BaseTestCases:
             self.assertTrue(tmpfile.startswith("/tmp/"))
             # TODO: we should probably remove tmpfile after we are done.
 
+        def test_read_write_file(self):
+            f = "foo.txt"
+            t = "Foo\nBar\nBim\nBaz\n"
+            self.host.write_file(f, t)
+            t2 = self.host.read_file(f)
+            self.assertEqual(t, t2)
+            self.host.rm(
+
 class TestLocalLinux(BaseTestCases.LinuxTestBase):
     def setUp(self):
         self.host = Linux(user=self.user, passwd=self.passwd)
