@@ -9,6 +9,7 @@ import re
 from getpass import getuser
 import shlex
 import paramiko
+from scp import SCPClient, SCPException
 from . import Handler, NoSuchCommand
 
 class RemoteHandler(Handler):
@@ -85,6 +86,33 @@ class RemoteHandler(Handler):
             err.pop()
         ret = stdout.channel.recv_exit_status()
         return ret, out, err
+
+    def copy(self, src, dest, **kwargs):
+        """
+        Copies a file.
+
+        :param str src: the file to copy
+        :param str dest: the location to copy to.
+        :return tuple: the exit code (``int``), stdout (``list``) and 
+            stderr (``list``)
+        """
+        ret, out, err = self.do("mktemp")
+        tmp = out[0]
+        scp = SCPClient(self.ssh.get_transport())
+        try:
+            scp.put(src, remote_path=tmp)
+        except SCPException as e:
+            return 1, [], [e]
+        finally:
+            scp.close()
+
+        cmd = "cp {} {}".format(tmp, dest)
+        if 'sudo' in kwargs and kwargs['sudo'] is True:
+            self.sudo(cmd, **kwargs)
+        else:
+            self.do(cmd, **kwargs)
+        # TODO: for now
+        return 0, [], []
 
     def interact(self, script, **kwargs):
         pass

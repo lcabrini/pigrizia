@@ -8,6 +8,7 @@ import logging
 import string
 import secrets
 import crypt
+import tempfile
 from .host import Host, CommandFailed
 from pigrizia.service.user import UserExists, NoSuchUser
 
@@ -231,6 +232,19 @@ class Linux(Host):
         cmd = "cat {}".format(fname)
         ret, out, err = self._call(cmd, **kwargs)
         return '\n'.join(out)
+
+    def write_file(self, fname, content, **kwargs):
+        """
+        Write a file.
+
+        :param str fname: the name of the file to write
+        :param str content: the content of the file
+        """
+        with tempfile.NamedTemporaryFile() as f:
+            f.write(content.encode())
+            f.flush()
+            ret, out, err = self.cmdh.copy(f.name, fname)
+        # TODO: we should probably check ret and act on it...
 
     def mktemp(self, **kwargs):
         """
