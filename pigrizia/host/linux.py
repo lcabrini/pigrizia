@@ -33,8 +33,7 @@ class Linux(Host):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    # This is probably not how it should be done, but let's keep it 
-    # until a better idea comes along.
+    @property
     def python(self, **kwargs):
         """
         Gets this Linux host's Python service.
