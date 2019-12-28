@@ -99,9 +99,23 @@ class RemoteHandler(Handler):
         # TODO: I think it is necessary to first copy it to the remote host
         # as a temporary file, then copy it to it's final location. The
         # reason is that the final destination may require sudo access.
+        ret, out, err = self.do("mktemp")
+        tmp = out[0]
         scp = SCPClient(self.ssh.get_transport())
-        scp.put(src, remote_path=dest)
-        scp.close()
+        try:
+            scp.put(src, remote_path=tmp)
+        except SCPException as e:
+            return 1, [], [e]
+        finally:
+            scp.close()
+
+        cmd = "cp {} {}".format(tmp, dest)
+        if 'sudo' in kwargs and kwargs['sudo'] is True:
+            self.sudo(cmd, **kwargs)
+        else:
+            self.do(cmd, **kwargs)
+        # TODO: for now
+        return 0, [], []
 
     def interact(self, script, **kwargs):
         pass
