@@ -196,10 +196,7 @@ class PingMonitor(Monitor):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def monitor(self):
-        """
-        Run this monitor. 
-        """
+    def _monitor(self):
         if self.config.test_count < 1:
             raise NoTests()
 
