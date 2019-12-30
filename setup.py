@@ -24,7 +24,8 @@ setuptools.setup(
                 ['conf/monitor/ping.conf'])],
         install_requires=[
             'paramiko',
-            'toml'
+            'toml',
+            'humanfriendly',
             ],
         classifiers=[
             "Programming Language :: Python :: 3",
