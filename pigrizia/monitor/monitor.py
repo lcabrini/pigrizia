@@ -5,6 +5,8 @@
 # https://opensource.org/licenses/MIT.
 
 from datetime import datetime
+import toml
+from pigrizia.host import get_host
 
 class NoTests(Exception):
     """
