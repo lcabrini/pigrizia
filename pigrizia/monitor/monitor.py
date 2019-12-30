@@ -110,3 +110,22 @@ class Monitor:
         self._start_time = datetime.now()
         self._monitor()
         self._end_time = datetime.now()
+
+    def severity(self, value, thresholds):
+        """
+        Compares a value against a set of severities and returns the
+        highest severity the value is greater than.
+
+        :param int/float value: the value to be tested
+        :param list thresholds: the severity levels
+        :returns: the hightest severity
+        :rtype: str
+        """
+        levels = ('Notice', 'Warning', 'Critical')
+        severity = None
+        for index, threshold in enumerate(thresholds):
+            if value < threshold:
+                return severity
+            else:
+                severity = levels[index]
+        return severity
