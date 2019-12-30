@@ -26,6 +26,32 @@ class NotDone(Exception):
     """
     pass
 
+class Configurator:
+    """
+    Base class for monitor configurators (which is a very dumb name, by
+    the way).
+    """
+    def __init__(self, config_file, **kwargs):
+        self._config_file = config_file
+
+        if 'host' in kwargs:
+            self.host = kwargs['host']
+        else:
+            self.host = get_host()
+        self._config = self.configure()
+
+    def configure(self):
+        """
+        Reads in the configuration for this host. 
+        """
+        try:
+            f = self.host.read_file(self._config_file)
+            config = toml.loads(f)
+        except FileNotFoundError:
+            # TODO: we need to do something here.
+            return 1
+        return config
+
 class Monitor:
     """
     Base class for monitors.
