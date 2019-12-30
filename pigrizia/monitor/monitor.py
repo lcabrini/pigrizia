@@ -116,7 +116,12 @@ class Monitor:
     def severity(self, value, thresholds):
         """
         Compares a value against a set of severities and returns the
-        highest severity the value is greater than.
+        highest severity the value reaches.
+
+        If the first item in the thresholds list is greater than the last
+        value then the function will exit when it finds a value that is
+        greater than the current threshold. Otherwise is will return when
+        it finds a value that is less than the threshold.
 
         :param int/float value: the value to be tested
         :param list thresholds: the severity levels
@@ -125,8 +130,11 @@ class Monitor:
         """
         levels = ('Notice', 'Warning', 'Critical')
         severity = None
+        max_thresholds = thresholds[0] > thresholds[-1]
         for index, threshold in enumerate(thresholds):
-            if value < threshold:
+            if max_thresholds and value > threshold:
+                return severity
+            elif not max_thresholds and value < threshold:
                 return severity
             else:
                 severity = levels[index]
