@@ -162,6 +162,18 @@ class PingConfigurator:
         network = self.host_network(host)
         return self.network_tests(network)
 
+    def add_network(self, label, hosts=[], **kwargs):
+        """
+        Add a network to this configuration.
+
+        :param str label: the label of the new network
+        :param list hosts: the hosts that belong to this network
+        """
+        self.config['network'].append({
+            'label': label,
+            'hosts': hosts,
+            })
+
     def configure(self):
         """
         Reads in the configuration for this host. 
