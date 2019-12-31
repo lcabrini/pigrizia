@@ -5,6 +5,8 @@
 # https://opensource.org/licenses/MIT.
 
 from datetime import datetime
+import toml
+from pigrizia.host import get_host
 
 class NoTests(Exception):
     """
@@ -25,6 +27,32 @@ class NotDone(Exception):
     that has not yet ended.
     """
     pass
+
+class Configurator:
+    """
+    Base class for monitor configurators (which is a very dumb name, by
+    the way).
+    """
+    def __init__(self, config_file, **kwargs):
+        self._config_file = config_file
+
+        if 'host' in kwargs:
+            self.host = kwargs['host']
+        else:
+            self.host = get_host()
+        self._config = self.configure()
+
+    def configure(self):
+        """
+        Reads in the configuration for this host. 
+        """
+        try:
+            f = self.host.read_file(self._config_file)
+            config = toml.loads(f)
+        except FileNotFoundError:
+            # TODO: we need to do something here.
+            return 1
+        return config
 
 class Monitor:
     """
@@ -84,3 +112,30 @@ class Monitor:
         self._start_time = datetime.now()
         self._monitor()
         self._end_time = datetime.now()
+
+    def severity(self, value, thresholds):
+        """
+        Compares a value against a set of severities and returns the
+        highest severity the value reaches.
+
+        If the first item in the thresholds list is greater than the last
+        value then the function will exit when it finds a value that is
+        greater than the current threshold. Otherwise is will return when
+        it finds a value that is less than the threshold.
+
+        :param int/float value: the value to be tested
+        :param list thresholds: the severity levels
+        :returns: the hightest severity
+        :rtype: str
+        """
+        levels = ('Notice', 'Warning', 'Critical')
+        severity = None
+        max_thresholds = thresholds[0] > thresholds[-1]
+        for index, threshold in enumerate(thresholds):
+            if max_thresholds and value > threshold:
+                return severity
+            elif not max_thresholds and value < threshold:
+                return severity
+            else:
+                severity = levels[index]
+        return severity
