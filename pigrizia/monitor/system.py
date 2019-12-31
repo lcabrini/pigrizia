@@ -5,7 +5,11 @@
 # https://opensource.org/licenses/MIT.
 
 """
-
+This is an implementation of a system monitor. It is meant to monitor and
+report on issues like the following:
+    * Are we running low on hard disk space?
+    * What is memory utilization like? Are we using swap?
+    * What is the load on the system?
 """
 
 import sys
@@ -17,7 +21,7 @@ config_file = sys.prefix + '/pigrizia/conf/monitor/system.conf'
 
 class SystemConfigurator(Configurator):
     """
-
+    This is the configuration part of the system monitor.
     """
     
     def __init__(self, **kwargs):
@@ -33,7 +37,7 @@ class SystemConfigurator(Configurator):
 
 class SystemMonitor(Monitor):
     """
-
+    This is the monitoring part of the system monitor.
     """
     
     def __init__(self, **kwargs):
