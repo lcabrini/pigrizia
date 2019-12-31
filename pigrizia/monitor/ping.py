@@ -173,6 +173,7 @@ class PingConfigurator:
             'label': label,
             'hosts': hosts,
             })
+        self.update()
 
     def configure(self):
         """
@@ -190,7 +191,7 @@ class PingConfigurator:
         """
         Updates the configuration for this host.
         """
-        pass
+        self.host.write_file(config_file, toml.dumps(self.config))
 
 class PingMonitor(Monitor):
     """
