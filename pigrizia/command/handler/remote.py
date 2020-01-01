@@ -10,7 +10,13 @@ from getpass import getuser
 import shlex
 import paramiko
 from scp import SCPClient, SCPException
+from pigrizia.host import get_host
 from . import Handler, NoSuchCommand
+
+class CopyFailed(Exception):
+    """
+    Inidicates that a copy operation failed.
+    """
 
 class RemoteHandler(Handler):
     """
@@ -106,6 +112,17 @@ class RemoteHandler(Handler):
         finally:
             scp.close()
 
+        shost = get_host()
+        schk = shost.checksum(src)
+        cmd = "sha512sum {}".format(tmp)
+        if 'sudo' in kwargs and kwargs['sudo'] is True:
+            ret, out, err = self.sudo(cmd, **kwargs)
+        else:
+            ret, out, err = self.do(cmd, **kwargs)
+        dchk = out[0].split()[0]
+        if schk != dchk:
+            raise CopyFailed()
+    
         cmd = "cp {} {}".format(tmp, dest)
         if 'sudo' in kwargs and kwargs['sudo'] is True:
             self.sudo(cmd, **kwargs)
