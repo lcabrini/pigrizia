@@ -11,6 +11,8 @@ from getpass import getuser, getpass
 from pigrizia.host.linux import Linux
 from pigrizia.service.user import UserExists, NoSuchUser
 
+checksum = "730c3c44ec7fd5d7392a5e41a472b3c495be4179527ee45ce899b239e9df1fdd1ee08e5b62dc460f73a4f39ce8be8120adb4e7bacc6864f09ce35bdffa90e816"
+
 class BaseTestCases:
     class LinuxTestBase(unittest.TestCase):
         user = getuser()
@@ -77,6 +79,14 @@ class BaseTestCases:
             self.assertEqual(t, t2)
             # TODO: add this when we have rm command
             # self.host.rm(f)
+
+        def test_checksum(self):
+            f = "foo.txt"
+            t = "Foo\nBar\nBim\nBaz\n"
+            self.host.write_file(f, t)
+            cs = self.host.checksum(f)
+            self.assertEqual(cs, checksum)
+            
 
 class TestLocalLinux(BaseTestCases.LinuxTestBase):
     def setUp(self):
