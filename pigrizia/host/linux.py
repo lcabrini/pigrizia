@@ -269,6 +269,22 @@ class Linux(Host):
             raise CommandFailed('\n'.join(err))
         return out[0]
 
+    def checksum(self, fname, **kwargs):
+        """
+        Returns the (SHA-512) checksum of the specified file.
+
+        :param str fname: the file to get the checksum for
+        :returns: the SHA-512 checksum
+        :rtype: str
+        :raises CommandFailed: if the command failed
+        """
+        cmd = "sha512sum {}".format(fname)
+        ret, out, err = self._call(cmd, **kwargs)
+        if ret == 0:
+            return out[0].split()[0]
+        else:
+            raise CommandFailed(err)
+
     def has_pigrizia(self, **kwargs):
         """
         Checks if Pigrizia is already installed on this host.
