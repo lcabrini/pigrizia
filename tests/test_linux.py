@@ -75,7 +75,8 @@ class BaseTestCases:
             self.host.write_file(f, t)
             t2 = self.host.read_file(f)
             self.assertEqual(t, t2)
-            self.host.rm(
+            # TODO: add this when we have rm command
+            # self.host.rm(f)
 
 class TestLocalLinux(BaseTestCases.LinuxTestBase):
     def setUp(self):
