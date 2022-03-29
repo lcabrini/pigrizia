@@ -15,7 +15,7 @@ Logbook==1.5.3
 MarkupSafe==1.1.1
 mbstrdecoder==0.8.1
 packaging==19.2
-paramiko==2.7.1
+paramiko==2.10.1
 paramiko-expect==0.2.8
 pexpect==4.7.0
 pingparsing==0.18.1
